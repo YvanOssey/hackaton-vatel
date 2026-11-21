@@ -1,0 +1,10 @@
+# Jamais envoyés à Vercel : secrets locaux et fichiers de l assistant
+.env
+.env.*
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+.kilo/
+node_modules/
+.next/

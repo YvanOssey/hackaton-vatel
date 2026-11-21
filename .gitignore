@@ -15,3 +15,8 @@ CLAUDE.md
 CLAUDE.local.md
 AGENTS.md
 .kilo/
+# Projet Vercel lié localement
+.vercel/
+
+.vercel
+.env*
