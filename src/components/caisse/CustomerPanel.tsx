@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { Banknote, CircleCheck, CircleX, Clock3, ShieldAlert, TriangleAlert, X } from "lucide-react";
+import { Banknote, CircleCheck, CircleX, Clock3, ShieldAlert, ShoppingBag, TriangleAlert, Utensils, X } from "lucide-react";
 import type { CustomerSnapshot } from "@/server/services/pos";
 import { cashTopUpAction, serveAction } from "@/app/caisse/actions";
 import { useToast } from "@/components/toast";
@@ -87,7 +87,15 @@ export function CustomerPanel({ customer, onUpdate, onClear }: { customer: Custo
           ) : reservation ? (
             <span className="flex flex-wrap gap-1.5">
               <Badge tone="brand" className="text-sm">{t("Réservé")}</Badge>
-              {reservation.pickupSlot && <Badge tone="info" className="text-sm">{t("À emporter · {time}", { time: reservation.pickupSlot })}</Badge>}
+              {reservation.pickupSlot ? (
+                <Badge tone="info" className="text-sm">
+                  <ShoppingBag className="size-3.5" /> {t("À emporter · {time}", { time: reservation.pickupSlot })}
+                </Badge>
+              ) : (
+                <Badge className="text-sm">
+                  <Utensils className="size-3.5" /> {t("Sur place")}
+                </Badge>
+              )}
             </span>
           ) : (
             <Badge tone="warning" className="text-sm">{t("Non réservé")}</Badge>
