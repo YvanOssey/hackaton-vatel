@@ -1,6 +1,26 @@
 /* CantineConnect — service worker : notifications push */
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
+const CACHE = "cc-v1";
+const SHELL = ["/hors-ligne.html", "/icons/icon-192.png", "/logos/wave.png", "/logos/orange-money.svg"];
+
+self.addEventListener("install", (event) => event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())));
+self.addEventListener("activate", (event) =>
+  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())),
+);
+
+// Hors ligne : pages -> réseau d'abord, page de secours si coupé ; fichiers statiques et images -> cache d'abord.
+// Jamais en cache : API, actions serveur, pages connectées (données personnelles).
+self.addEventListener("fetch", (event) => {
+  const req = event.request;
+  const url = new URL(req.url);
+  if (req.method !== "GET" || url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
+  if (req.mode === "navigate") {
+    event.respondWith(fetch(req).catch(() => caches.match("/hors-ligne.html")));
+    return;
+  }
+  if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/") || url.pathname.startsWith("/logos/")) {
+    event.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); return res; })));
+  }
+});
 
 self.addEventListener("push", (event) => {
   let data = {};

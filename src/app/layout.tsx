@@ -3,6 +3,7 @@ import "@fontsource-variable/inter";
 import "@fontsource-variable/bricolage-grotesque";
 import "./globals.css";
 import { ToastProvider } from "@/components/toast";
+import { PwaRegister } from "@/components/push/PwaRegister";
 import { I18nProvider } from "@/i18n/client";
 import { getI18n } from "@/i18n/server";
 import { env } from "@/server/env";
@@ -26,7 +27,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale}>
       <body className="min-h-screen font-sans">
         <I18nProvider locale={locale} timeZone={env.timezone}>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            {children}
+            <PwaRegister />
+          </ToastProvider>
         </I18nProvider>
       </body>
     </html>

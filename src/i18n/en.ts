@@ -974,4 +974,5 @@ export const en: Record<string, string> = {
   "Créneau de retrait choisi": "Pickup slot chosen",
   "Repas sur place": "Eating in",
   "Sur place": "Eating in",
+  "Installer l'application": "Install the app",
 };
