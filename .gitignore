@@ -1,0 +1,18 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+# Fichiers d'environnement (mots de passe de base, secrets) : seul l'exemple est versionné
+.env
+.env.*
+!.env.example
+*.zip
+*.bundle
+# Fichiers de l'assistant
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+.kilo/

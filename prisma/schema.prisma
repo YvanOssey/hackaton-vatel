@@ -1,0 +1,384 @@
+// Schéma de données CantineConnect — PostgreSQL
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // Neon : DATABASE_URL = adresse poolée (« -pooler », utilisée par l'application)
+  //        DIRECT_URL   = adresse directe (utilisée par les migrations)
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  CONSUMER
+  PARENT
+  CASHIER
+  CHEF
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  SUSPENDED
+}
+
+enum TariffGroup {
+  STUDENT
+  SCHOLARSHIP
+  STAFF
+  EXTERNAL
+}
+
+enum Course {
+  STARTER
+  MAIN
+  DESSERT
+}
+
+enum MenuStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum NutriScore {
+  A
+  B
+  C
+  D
+  E
+}
+
+enum ReservationStatus {
+  RESERVED
+  CANCELLED
+  SERVED
+}
+
+enum TransactionType {
+  TOPUP
+  MEAL
+  ADJUSTMENT
+}
+
+enum PaymentMethod {
+  CASH
+  WALLET
+  ADMIN
+  MOBILE_MONEY
+}
+
+enum MobileProvider {
+  WAVE
+  ORANGE_MONEY
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  EXPIRED
+}
+
+enum CashSessionStatus {
+  OPEN
+  CLOSED
+}
+
+model User {
+  id                 String        @id @default(cuid())
+  email              String        @unique
+  passwordHash       String
+  firstName          String
+  lastName           String
+  phone              String?
+  role               Role          @default(CONSUMER)
+  status             AccountStatus @default(PENDING)
+  tariffGroup        TariffGroup   @default(EXTERNAL)
+  requestedGroup     TariffGroup?
+  /// Matricule, n° étudiant ou n° de badge déclaré à l'inscription
+  memberRef          String?
+  allergens          String[]      @default([])
+  /// Solde du portefeuille en FCFA (jamais négatif, contrainte SQL)
+  balance            Int           @default(0)
+  /// Incrémenté pour révoquer les anciens QR Codes
+  passVersion        Int           @default(1)
+  /// Langue préférée (fr | en) : notifications push et e-mails
+  locale             String        @default("fr")
+  mustChangePassword Boolean       @default(false)
+  reviewNote         String?
+  reviewedAt         DateTime?
+  reviewedById       String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  sessions          Session[]
+  reservations      Reservation[]      @relation("ReservationUser")
+  servedMeals       Reservation[]      @relation("ReservationServer")
+  transactions      Transaction[]      @relation("TransactionUser")
+  operations        Transaction[]      @relation("TransactionOperator")
+  cashSessions      CashSession[]
+  auditLogs         AuditLog[]
+  children          ParentLink[]       @relation("ParentLinkParent")
+  parents           ParentLink[]       @relation("ParentLinkChild")
+  linkCode          LinkCode?
+  paymentsFor       PaymentIntent[]    @relation("PaymentBeneficiary")
+  paymentsMade      PaymentIntent[]    @relation("PaymentPayer")
+  notifications     Notification[]
+  ratings           Rating[]
+  pushSubscriptions PushSubscription[]
+
+  @@index([status, role])
+  @@index([lastName, firstName])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  /// SHA-256 du jeton envoyé dans le cookie (le jeton brut n'est jamais stocké)
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userAgent String?
+
+  @@index([userId])
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  key       String
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
+model Menu {
+  id          String     @id @default(cuid())
+  date        DateTime   @unique @db.Date
+  status      MenuStatus @default(DRAFT)
+  nutriScore  NutriScore @default(B)
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  dishes      Dish[]
+  ratings     Rating[]
+}
+
+model Dish {
+  id         String   @id @default(cuid())
+  menuId     String
+  menu       Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  course     Course
+  name       String
+  allergens  String[] @default([])
+  kcal       Int      @default(0)
+  vegetarian Boolean  @default(false)
+
+  @@unique([menuId, course])
+}
+
+model Reservation {
+  id               String            @id @default(cuid())
+  userId           String
+  user             User              @relation("ReservationUser", fields: [userId], references: [id])
+  date             DateTime          @db.Date
+  status           ReservationStatus @default(RESERVED)
+  /// Tarif figé au moment de la réservation (FCFA)
+  price            Int
+  walkIn           Boolean           @default(false)
+  allergenOverride Boolean           @default(false)
+  servedAt         DateTime?
+  servedById       String?
+  servedBy         User?             @relation("ReservationServer", fields: [servedById], references: [id])
+  cancelledAt      DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  transactions     Transaction[]
+  rating           Rating?
+
+  @@unique([userId, date])
+  @@index([date, status])
+}
+
+/// Grand livre du portefeuille : écritures immuables
+model Transaction {
+  id            String          @id @default(cuid())
+  userId        String
+  user          User            @relation("TransactionUser", fields: [userId], references: [id])
+  type          TransactionType
+  method        PaymentMethod
+  /// Montant signé en FCFA : positif = crédit, négatif = débit
+  amount        Int
+  balanceAfter  Int
+  label         String
+  note          String?
+  reservationId String?
+  reservation   Reservation?    @relation(fields: [reservationId], references: [id])
+  cashSessionId String?
+  cashSession   CashSession?    @relation(fields: [cashSessionId], references: [id])
+  operatorId    String?
+  operator      User?           @relation("TransactionOperator", fields: [operatorId], references: [id])
+  createdAt     DateTime        @default(now())
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([cashSessionId])
+}
+
+model CashSession {
+  id           String            @id @default(cuid())
+  cashierId    String
+  cashier      User              @relation(fields: [cashierId], references: [id])
+  status       CashSessionStatus @default(OPEN)
+  openingFloat Int
+  openedAt     DateTime          @default(now())
+  closedAt     DateTime?
+  expectedCash Int?
+  countedCash  Int?
+  difference   Int?
+  closingNote  String?
+  transactions Transaction[]
+
+  @@index([cashierId, status])
+  @@index([openedAt])
+}
+
+/// Paramètres de l'établissement (ligne unique id = 1)
+model Settings {
+  id                  Int      @id @default(1)
+  establishmentName   String   @default("Restaurant collectif")
+  cutoffTime          String   @default("10:00")
+  bookingHorizonDays  Int      @default(14)
+  lowBalanceThreshold Int      @default(2000)
+  allowWalkIn         Boolean  @default(true)
+  priceStudent        Int      @default(1500)
+  priceScholarship    Int      @default(500)
+  priceStaff          Int      @default(2500)
+  priceExternal       Int      @default(4000)
+  updatedAt           DateTime @updatedAt
+}
+
+model StockItem {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  unit      String
+  qty       Int      @default(0)
+  minQty    Int      @default(0)
+  /// Quantité décomptée à chaque repas servi en caisse
+  perMeal   Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String
+  targetType String?
+  targetId   String?
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([targetType, targetId])
+}
+
+/// Lien parent ↔ étudiant, créé avec le code d'association généré par l'étudiant
+model ParentLink {
+  id        String   @id @default(cuid())
+  parentId  String
+  parent    User     @relation("ParentLinkParent", fields: [parentId], references: [id], onDelete: Cascade)
+  childId   String
+  child     User     @relation("ParentLinkChild", fields: [childId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([parentId, childId])
+  @@index([childId])
+}
+
+/// Code d'association à usage unique (un seul actif par étudiant, empreinte SHA-256)
+model LinkCode {
+  id        String   @id @default(cuid())
+  childId   String   @unique
+  child     User     @relation(fields: [childId], references: [id], onDelete: Cascade)
+  codeHash  String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+/// Rechargement en ligne (Mobile Money) : crédité une seule fois, à la confirmation de l'opérateur
+model PaymentIntent {
+  id            String         @id @default(cuid())
+  reference     String         @unique
+  userId        String
+  user          User           @relation("PaymentBeneficiary", fields: [userId], references: [id])
+  payerId       String
+  payer         User           @relation("PaymentPayer", fields: [payerId], references: [id])
+  provider      MobileProvider
+  phone         String
+  amount        Int
+  status        PaymentStatus  @default(PENDING)
+  failureReason String?
+  transactionId String?        @unique
+  createdAt     DateTime       @default(now())
+  completedAt   DateTime?
+
+  @@index([payerId, createdAt])
+  @@index([userId, createdAt])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind      String
+  title     String
+  body      String
+  /// Paramètres d'interpolation : title et body sont des textes sources traduits à l'affichage
+  params    Json?
+  href      String?
+  readAt    DateTime?
+  /// Envoi push traité (boîte d'envoi : rempli après la tentative d'envoi)
+  pushedAt  DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt, createdAt])
+  @@index([pushedAt, createdAt])
+}
+
+/// Abonnement Web Push d'un appareil (un utilisateur peut en avoir plusieurs)
+model PushSubscription {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint   String    @unique
+  p256dh     String
+  auth       String
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  @@index([userId])
+}
+
+/// Note d'un repas servi (une par repas)
+model Rating {
+  id            String      @id @default(cuid())
+  reservationId String      @unique
+  reservation   Reservation @relation(fields: [reservationId], references: [id])
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  menuId        String
+  menu          Menu        @relation(fields: [menuId], references: [id])
+  score         Int
+  comment       String?
+  createdAt     DateTime    @default(now())
+
+  @@index([menuId])
+  @@index([createdAt])
+}

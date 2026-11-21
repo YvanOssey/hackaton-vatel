@@ -1,0 +1,45 @@
+# Lancement complet de CantineConnect : base PostgreSQL + application.
+#
+#   docker compose up -d --build        puis ouvrir http://localhost:3000
+#
+# Les valeurs viennent du fichier .env du projet (AUTH_SECRET, ADMIN_EMAIL, ADMIN_PASSWORD, VAPID_*).
+# DEMO_DATA=true charge les comptes de démonstration (*@demo.cantine, mot de passe Demo2026cantine).
+# La base de l'application tourne dans son propre conteneur : elle est indépendante de celle utilisée avec npm run dev.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cantine
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cantine}
+      POSTGRES_DB: cantine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cantine"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    image: cantine-connect
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://cantine:${POSTGRES_PASSWORD:-cantine}@db:5432/cantine?schema=public
+      DIRECT_URL: postgresql://cantine:${POSTGRES_PASSWORD:-cantine}@db:5432/cantine?schema=public
+      AUTH_SECRET: ${AUTH_SECRET:?Définissez AUTH_SECRET dans .env (32 caractères minimum)}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Africa/Abidjan}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:contact@exemple.com}
+      DEMO_DATA: ${DEMO_DATA:-true}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+
+volumes:
+  pgdata:

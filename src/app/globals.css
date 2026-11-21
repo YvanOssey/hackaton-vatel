@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Bricolage Grotesque Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root {
+  color-scheme: light;
+  --page: #f6f8f7;
+}
+
+html {
+  /* Pas de délai de double-tap sur mobile ; surbrillance au toucher discrète, aux couleurs de la marque */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgb(16 185 129 / 0.12);
+}
+
+@media (pointer: fine) {
+  html {
+    overscroll-behavior: none;
+  }
+}
+
+body {
+  background: var(--page);
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: #a7f3d0;
+  color: #022c22;
+}
+
+/* ─── Mouvements de base ─────────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop {
+  0% { transform: scale(0.96); opacity: 0; }
+  60% { transform: scale(1.01); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+@keyframes draw {
+  from { stroke-dashoffset: var(--len, 120); }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+  50% { transform: translateY(-8px) rotate(var(--r, 0deg)); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+@keyframes ping-soft {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes print {
+  from { transform: translateY(-104%); }
+  to { transform: translateY(0); }
+}
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes check {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Classes maison dans la couche « components » : les utilitaires Tailwind peuvent les surcharger */
+@layer components {
+/* Entrée échelonnée : style={{ "--d": "120ms" }} */
+.anim-rise {
+  opacity: 0;
+  animation: rise 640ms var(--ease-out-expo) forwards;
+  animation-delay: var(--d, 0ms);
+}
+.anim-fade {
+  opacity: 0;
+  animation: fade-in 500ms ease-out forwards;
+  animation-delay: var(--d, 0ms);
+}
+.anim-float { animation: float 7s ease-in-out infinite; animation-delay: var(--d, 0ms); }
+.anim-shake { animation: shake 420ms ease-in-out; }
+.anim-ping-soft { animation: ping-soft 1.8s var(--ease-out-expo) infinite; }
+
+/* Zone tactile d'au moins 44 × 44 px autour d'une petite commande, sans changer son visuel.
+   Ne pas combiner avec .ticket (qui utilise aussi ::after). */
+.hit {
+  position: relative;
+}
+.hit::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #eef2f1 25%, #f8faf9 50%, #eef2f1 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Grille fine des surfaces sombres */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.055) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.bg-dots {
+  background-image: radial-gradient(rgb(15 23 42 / 0.07) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* ─── Signature : le ticket de cantine ────────────────────────────────
+   Deux encoches latérales et une ligne de découpe pointillée.
+   --notch : couleur du fond derrière le ticket ; --cut : position de la découpe. */
+.ticket {
+  --notch: var(--page);
+  --cut: 64%;
+  position: relative;
+}
+.ticket::before,
+.ticket::after {
+  content: "";
+  position: absolute;
+  top: var(--cut);
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 9999px;
+  background: var(--notch);
+  z-index: 2;
+}
+.ticket::before { left: -11px; }
+.ticket::after { right: -11px; }
+.ticket-cut {
+  border-top: 2px dashed rgb(15 23 42 / 0.12);
+}
+.ticket-cut-light {
+  border-top: 2px dashed rgb(255 255 255 / 0.25);
+}
+/* Bord dentelé (haut d'un reçu) */
+.ticket-edge {
+  height: 10px;
+  background: radial-gradient(circle at 8px -2px, transparent 7px, currentColor 7.5px) repeat-x;
+  background-size: 16px 10px;
+}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* Les entrées gardent un fondu court, sans déplacement : l'arrivée du contenu reste perceptible */
+  .anim-rise, .anim-fade {
+    animation-name: fade-in !important;
+    animation-duration: 150ms !important;
+    animation-delay: 0ms !important;
+  }
+}

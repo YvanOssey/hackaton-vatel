@@ -1,0 +1,11 @@
+node_modules
+.next
+.env
+.env.*
+!.env.example
+.git
+tests
+*.zip
+*.bundle
+tsconfig.tsbuildinfo
+docs
