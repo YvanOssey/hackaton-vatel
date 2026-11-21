@@ -110,6 +110,14 @@ export async function confirmTopUp(actor: Actor, intentId: string) {
         params: { name: actor.firstName, amount: intent.amount },
         href: "/espace/portefeuille",
       });
+    } else {
+      await notify(tx, [user.id], {
+        kind: "topup",
+        title: "Portefeuille crédité",
+        body: "{amount:money} via {provider}. Nouveau solde : {balance:money}.",
+        params: { amount: intent.amount, provider, balance },
+        href: "/espace/portefeuille",
+      });
     }
     const others = (await parentIdsOf(tx, user.id)).filter((id) => id !== actor.id);
     await notify(tx, others, {

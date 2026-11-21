@@ -71,9 +71,15 @@ export const METHODS: Record<PaymentMethod, string> = {
   MOBILE_MONEY: "Mobile Money",
 };
 
-export const MOBILE_PROVIDERS: Record<MobileProvider, { label: string; short: string; bg: string; fg: string }> = {
-  WAVE: { label: "Wave", short: "W", bg: "#1dc8ff", fg: "#0b2a4a" },
-  ORANGE_MONEY: { label: "Orange Money", short: "OM", bg: "#ff7900", fg: "#ffffff" },
+/**
+ * Opérateurs Mobile Money. Logos officiels servis par l'application (public/logos) :
+ * - Wave : icône de l'application, site officiel wave.com ;
+ * - Orange Money : symbole (les deux flèches) recadré du logo officiel d'orange.ci,
+ *   fichier « Logo_Orange_Money.svg » de Wikimedia Commons (domaine public).
+ */
+export const MOBILE_PROVIDERS: Record<MobileProvider, { label: string; short: string; bg: string; fg: string; logo: string }> = {
+  WAVE: { label: "Wave", short: "W", bg: "#1dc8ff", fg: "#0b2a4a", logo: "/logos/wave.png" },
+  ORANGE_MONEY: { label: "Orange Money", short: "OM", bg: "#ff7900", fg: "#ffffff", logo: "/logos/orange-money.svg" },
 };
 
 /** Numéro mobile ivoirien : 10 chiffres commençant par 01, 05 ou 07 (indicatif +225 facultatif) */

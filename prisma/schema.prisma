@@ -130,6 +130,7 @@ model User {
   notifications     Notification[]
   ratings           Rating[]
   pushSubscriptions PushSubscription[]
+  favoriteDishes    FavoriteDish[]
 
   @@index([status, role])
   @@index([lastName, firstName])
@@ -180,6 +181,20 @@ model Dish {
   vegetarian Boolean  @default(false)
 
   @@unique([menuId, course])
+}
+
+/// Plat préféré d'un étudiant. Les plats sont saisis librement par la cuisine :
+/// `key` (minuscules, sans accents ni ponctuation) sert à reconnaître le plat dans les menus publiés.
+model FavoriteDish {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  key       String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, key])
+  @@index([key])
 }
 
 /// Photo d'un plat, rattachée au jour et au plat (et non au Dish) :

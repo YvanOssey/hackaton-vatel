@@ -8,18 +8,7 @@ import {
   useTransition,
 } from "react";
 import Link from "next/link";
-import {
-  Bell,
-  BellRing,
-  CheckCheck,
-  HeartHandshake,
-  TriangleAlert,
-  UserCheck,
-  Utensils,
-  Wallet,
-  XCircle,
-  type LucideIcon,
-} from "lucide-react";
+import { Bell, BellRing, CalendarPlus, CheckCheck, Heart, HeartHandshake, TriangleAlert, UserCheck, Utensils, Wallet, XCircle, type LucideIcon } from "lucide-react";
 import { markReadAction } from "@/app/actions/notifications";
 import { useI18n } from "@/i18n/client";
 import { cn } from "@/lib/utils";
@@ -41,6 +30,8 @@ const KIND: Record<string, { icon: LucideIcon; tone: string }> = {
   topup: { icon: Wallet, tone: "bg-brand-100 text-brand-700" },
   family: { icon: HeartHandshake, tone: "bg-slate-100 text-slate-800" },
   payment_failed: { icon: XCircle, tone: "bg-red-100 text-red-700" },
+  menu: { icon: CalendarPlus, tone: "bg-brand-100 text-brand-700" },
+  favorite: { icon: Heart, tone: "bg-brand-950 text-brand-300" },
   test: { icon: BellRing, tone: "bg-brand-100 text-brand-700" },
 };
 

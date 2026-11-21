@@ -15,7 +15,7 @@ export function setTime(hhmm: string, day = TODAY) {
 
 export async function resetDb() {
   await prisma.$executeRawUnsafe(
-    `TRUNCATE "MenuPhoto","Notification","Rating","PaymentIntent","LinkCode","ParentLink","AuditLog","Transaction","Reservation","CashSession","Dish","Menu","Session","LoginAttempt","StockItem","Settings","User" RESTART IDENTITY CASCADE`,
+    `TRUNCATE "FavoriteDish","MenuPhoto","Notification","Rating","PaymentIntent","LinkCode","ParentLink","AuditLog","Transaction","Reservation","CashSession","Dish","Menu","Session","LoginAttempt","StockItem","Settings","User" RESTART IDENTITY CASCADE`,
   );
   await prisma.settings.create({ data: { id: 1 } });
 }

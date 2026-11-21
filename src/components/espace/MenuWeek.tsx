@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CalendarX2, Check, CircleCheck, Clock, Flame, Leaf, Lock, MessageSquareText, TriangleAlert } from "lucide-react";
+import { CalendarX2, Check, CircleCheck, Clock, Flame, Heart, Leaf, Lock, MessageSquareText, TriangleAlert } from "lucide-react";
 import type { Course, NutriScore, ReservationStatus } from "@prisma/client";
-import { cancelAction, rateMealAction, reserveAction } from "@/app/espace/actions";
+import { cancelAction, rateMealAction, reserveAction, toggleFavoriteAction } from "@/app/espace/actions";
 import { DishPhoto } from "@/components/DishPhoto";
 import { useResultToast } from "@/components/toast";
 import { AllergenChip, Badge, Button, Card, NutriBadge, Segmented, Stars } from "@/components/ui";
 import { COURSES, RATING_LABELS, allergenLabel } from "@/lib/constants";
 import { allergenConflicts } from "@/lib/rules";
+import { matchesFavorite } from "@/lib/dishes";
 import { addDays, cn, delay, isoToDate, mondayOf } from "@/lib/utils";
 import { useI18n } from "@/i18n/client";
 import { rich } from "@/i18n/rich";
@@ -21,7 +22,7 @@ export type Day = {
   booking: { open: true } | { open: false; reason: string; params?: Record<string, string | number> };
 };
 
-type Props = { initialWeek?: "current" | "next"; days: Day[]; today: string; price: number; cutoff: string; userAllergens: string[]; canBook: boolean };
+type Props = { initialWeek?: "current" | "next"; days: Day[]; today: string; price: number; cutoff: string; userAllergens: string[]; canBook: boolean; favoriteKeys: string[] };
 
 export function MenuWeek(props: Props) {
   const { t } = useI18n();
@@ -71,7 +72,7 @@ export function MenuWeek(props: Props) {
   );
 }
 
-function DayCard({ day, today, price, userAllergens, canBook }: { day: Day } & Props) {
+function DayCard({ day, today, price, userAllergens, canBook, favoriteKeys }: { day: Day } & Props) {
   const { t, day: fmtDay, money } = useI18n();
   const [pending, start] = useTransition();
   const show = useResultToast();
@@ -132,6 +133,7 @@ function DayCard({ day, today, price, userAllergens, canBook }: { day: Day } & P
                   <p className={cn("mt-0.5 flex items-center gap-1.5 text-slate-800", dish.course === "MAIN" ? "font-display text-[15px] font-semibold" : "text-sm font-medium")}>
                     {dish.name}
                     {dish.vegetarian && <Leaf className="size-3.5 shrink-0 text-brand-600" aria-label={t("Végétarien")} />}
+                    <FavoriteHeart name={dish.name} on={favoriteKeys.some((k) => matchesFavorite(dish.name, k))} />
                   </p>
                   {dish.allergens.length > 0 && (
                     <div className="mt-1.5 flex flex-wrap gap-1">
@@ -251,5 +253,25 @@ export function RateMeal({ reservationId, rating, compact }: { reservationId: st
         </div>
       )}
     </div>
+  );
+}
+
+/** Cœur d'un plat : l'étudiant reçoit une alerte quand ce plat revient au menu */
+function FavoriteHeart({ name, on }: { name: string; on: boolean }) {
+  const { t } = useI18n();
+  const [pending, start] = useTransition();
+  const show = useResultToast();
+  return (
+    <button
+      type="button"
+      disabled={pending}
+      aria-pressed={on}
+      aria-label={t(on ? "Retirer {dish} de mes plats préférés" : "Ajouter {dish} à mes plats préférés", { dish: name })}
+      title={t(on ? "Plat préféré" : "Ajouter à mes plats préférés")}
+      onClick={() => start(async () => void show(await toggleFavoriteAction(name), on ? "Plat retiré des préférés" : "Plat préféré ajouté"))}
+      className="hit ml-auto shrink-0 rounded-full p-1 transition-transform active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-50"
+    >
+      <Heart className={cn("size-4 transition-colors", on ? "fill-brand-600 text-brand-600" : "text-slate-400 hover:text-brand-600")} />
+    </button>
   );
 }

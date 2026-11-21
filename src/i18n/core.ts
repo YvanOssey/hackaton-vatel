@@ -13,14 +13,15 @@ export const formatMoneyIn = (locale: Locale, n: number) => `${n < 0 ? "−" : "
 
 /**
  * Le français est la langue source : les clés du dictionnaire sont les textes français.
- * Interpolation : {name}, {amount:money}, {count:number}.
+ * Interpolation : {name}, {amount:money}, {count:number}, {date:day} (date ISO → « lundi 23 novembre »).
  */
 export function translate(locale: Locale, key: string, params?: Params) {
   const template = locale === "fr" ? key : (en[key] ?? key);
   if (!params) return template;
-  return template.replace(/\{(\w+)(?::(money|number))?\}/g, (whole, name: string, kind?: string) => {
+  return template.replace(/\{(\w+)(?::(money|number|day))?\}/g, (whole, name: string, kind?: string) => {
     const v = params[name];
     if (v === undefined || v === null) return "";
+    if (kind === "day" && typeof v === "string") return new Date(`${v}T00:00:00.000Z`).toLocaleDateString(INTL[locale], { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
     if (typeof v === "number" && kind === "money") return formatMoneyIn(locale, v);
     if (typeof v === "number") return formatNumberIn(locale, v);
     return String(v);

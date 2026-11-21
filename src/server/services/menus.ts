@@ -7,6 +7,7 @@ import { AppError } from "../errors";
 import { audit } from "../audit";
 import { clock } from "../time";
 import { type Actor, assertRole } from "./common";
+import { announceMenu } from "./favorites";
 
 const KITCHEN = ["CHEF", "ADMIN"] as const;
 
@@ -57,6 +58,14 @@ export async function saveMenu(actor: Actor, raw: MenuInput) {
         create: { ...dish, course, menuId: menu.id },
       });
     }
+    // Passage de brouillon à publié : les étudiants sont prévenus (une seule fois, pas à chaque correction)
+    if (input.publish && existing?.status !== "PUBLISHED") {
+      await announceMenu(tx, input.date, [
+        { course: "STARTER", name: input.starter.name },
+        { course: "MAIN", name: input.main.name },
+        { course: "DESSERT", name: input.dessert.name },
+      ]);
+    }
     await audit(tx, actor.id, input.publish ? "menu.publish" : "menu.save_draft", { type: "Menu", id: menu.id }, { date: input.date });
     return menu;
   });
@@ -72,6 +81,10 @@ export async function setMenuPublished(actor: Actor, menuId: string, publish: bo
   }
   await prisma.$transaction(async (tx) => {
     await tx.menu.update({ where: { id: menuId }, data: { status: publish ? "PUBLISHED" : "DRAFT", publishedAt: publish ? new Date() : null } });
+    if (publish && menu.status !== "PUBLISHED") {
+      const dishes = await tx.dish.findMany({ where: { menuId }, select: { course: true, name: true } });
+      await announceMenu(tx, menu.date.toISOString().slice(0, 10), dishes);
+    }
     await audit(tx, actor.id, publish ? "menu.publish" : "menu.unpublish", { type: "Menu", id: menuId });
   });
 }

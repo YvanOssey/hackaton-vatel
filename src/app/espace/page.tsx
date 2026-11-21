@@ -40,7 +40,7 @@ export default async function ConsumerHome({ searchParams }: { searchParams: Pro
           canBook={canBook}
         />
       </div>
-      <MenuWeek initialWeek={semaine === "prochaine" ? "next" : "current"} days={data.days} today={data.today} price={data.price} cutoff={data.settings.cutoffTime} userAllergens={data.user.allergens} canBook={canBook} />
+      <MenuWeek initialWeek={semaine === "prochaine" ? "next" : "current"} days={data.days} today={data.today} price={data.price} cutoff={data.settings.cutoffTime} userAllergens={data.user.allergens} canBook={canBook} favoriteKeys={data.favoriteKeys} />
     </div>
   );
 }

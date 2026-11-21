@@ -36,7 +36,11 @@ export async function consumerOverview(actor: Actor) {
     prisma.menu.findMany({ where: { status: "PUBLISHED", date: { gte: from, lte: to } }, include: { dishes: true }, orderBy: { date: "asc" } }),
     prisma.reservation.findMany({ where: { userId: actor.id, date: { gte: from, lte: to }, status: { not: "CANCELLED" } }, include: { rating: true } }),
   ]);
-  const [committed, photos] = await Promise.all([committedAmount(prisma, actor.id, now.today), photoIndex(menus.map((m) => m.date))]);
+  const [committed, photos, favorites] = await Promise.all([
+    committedAmount(prisma, actor.id, now.today),
+    photoIndex(menus.map((m) => m.date)),
+    prisma.favoriteDish.findMany({ where: { userId: actor.id }, select: { key: true } }),
+  ]);
   const days = Array.from({ length: 14 }, (_, i) => addDays(monday, i)).filter((d) => {
     const dow = isoToDate(d).getUTCDay();
     return (dow !== 0 && dow !== 6) || menus.some((m) => dateToIso(m.date) === d);
@@ -65,6 +69,7 @@ export async function consumerOverview(actor: Actor) {
     price: settings.priceStudent,
     committed,
     available: user.balance - committed,
+    favoriteKeys: favorites.map((f) => f.key),
     days: days.map((date) => {
       const menu = menus.find((m) => dateToIso(m.date) === date);
       const res = reservations.find((r) => dateToIso(r.date) === date);

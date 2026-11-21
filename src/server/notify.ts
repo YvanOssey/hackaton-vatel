@@ -1,7 +1,7 @@
 import "server-only";
 import type { Tx } from "./db";
 
-export type NotificationKind = "account" | "low_balance" | "meal_served" | "topup" | "family" | "payment_failed" | "test";
+export type NotificationKind = "account" | "low_balance" | "meal_served" | "topup" | "family" | "payment_failed" | "menu" | "favorite" | "test";
 
 export interface NotificationInput {
   kind: NotificationKind;

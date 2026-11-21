@@ -9,7 +9,12 @@ import { inbox, markRead } from "@/server/services/notifications";
 import { confirmTopUp, initiateTopUp } from "@/server/services/payments";
 import { serveMeal } from "@/server/services/pos";
 import { consumerOverview, familyOverview, kitchenOverview } from "@/server/services/queries";
-import { deleteMenu } from "@/server/services/menus";
+import { deleteMenu, saveMenu, setMenuPublished } from "@/server/services/menus";
+import { addFavorite, listFavorites, removeFavorite, toggleFavoriteDish } from "@/server/services/favorites";
+import { adjustBalance } from "@/server/services/admin";
+import { cashTopUp } from "@/server/services/pos";
+import { dishKey, matchesFavorite } from "@/lib/dishes";
+import { translate } from "@/i18n/core";
 import { readMenuPhoto, removeMenuPhoto, setMenuPhoto, sniffImage } from "@/server/services/photos";
 import { MAX_PHOTO_BYTES } from "@/lib/photos";
 import { rateMeal, ratingsSummary } from "@/server/services/ratings";
@@ -204,5 +209,77 @@ describe("Photos des plats", () => {
     expect(await code(removeMenuPhoto(chef, { date: "2026-11-19", course: "STARTER" }))).toBe("NOT_FOUND");
     await deleteMenu(chef, menu.id);
     expect(await prisma.menuPhoto.count()).toBe(0);
+  });
+});
+
+describe("Notifications de crédit et de nouveau menu", () => {
+  const dish = (name: string) => ({ name, allergens: [], kcal: 0, vegetarian: false });
+  const menuInput = (date: string, publish: boolean, main = "Poulet yassa, riz blanc") => ({ date, nutriScore: "B" as const, publish, starter: dish("Salade"), main: dish(main), dessert: dish("Ananas") });
+  const kinds = async (u: { id: string }) => (await prisma.notification.findMany({ where: { userId: u.id }, orderBy: { createdAt: "asc" } })).map((n) => n.kind);
+
+  it("prévient l'étudiant et ses parents de chaque crédit : espèces, Mobile Money, administration", async () => {
+    const { child, parent } = await linkedFamily(0);
+    const cashier = await makeUser({ role: "CASHIER" });
+    const admin = await makeUser({ role: "ADMIN" });
+    await prisma.notification.deleteMany();
+    await openCashSession(cashier, 0);
+    await cashTopUp(cashier, child.id, 2000);
+    const cash = await prisma.notification.findFirstOrThrow({ where: { userId: child.id, kind: "topup" } });
+    expect(translate("fr", cash.body, cash.params as Record<string, number>)).toBe("2 000 FCFA ajoutés en espèces au comptoir. Nouveau solde : 2 000 FCFA.");
+    expect(await kinds(parent)).toEqual(["topup"]);
+
+    const intent = await initiateTopUp(child, { beneficiaryId: child.id, provider: "WAVE", phone: "0708091011", amount: 1000 });
+    await confirmTopUp(child, intent.id);
+    await adjustBalance(admin, child.id, 500, "Geste commercial");
+    await adjustBalance(admin, child.id, -200, "Correction de caisse");
+    // 3 crédits (espèces, Wave, administration) ; la correction négative ne déclenche rien
+    expect(await kinds(child)).toEqual(["topup", "topup", "topup"]);
+  });
+
+  it("annonce un menu publié une seule fois ; le plat préféré remplace l'annonce générale", async () => {
+    const chef = await makeUser({ role: "CHEF" });
+    const fan = await makeUser();
+    const other = await makeUser();
+    const pending = await makeUser({ status: "PENDING" });
+    await addFavorite(fan, "poulet YASSA");
+    await prisma.notification.deleteMany();
+
+    await saveMenu(chef, menuInput("2026-11-19", false));
+    expect(await prisma.notification.count()).toBe(0); // brouillon : silence
+    await saveMenu(chef, menuInput("2026-11-19", true));
+    expect(await kinds(other)).toEqual(["menu"]);
+    expect(await kinds(fan)).toEqual(["favorite"]);
+    expect(await kinds(pending)).toEqual([]);
+    const fav = await prisma.notification.findFirstOrThrow({ where: { userId: fan.id } });
+    expect(translate("fr", fav.body, fav.params as Record<string, string>)).toBe("Poulet yassa, riz blanc sera servi le jeudi 19 novembre. Réservez votre repas.");
+    expect(translate("en", fav.body, fav.params as Record<string, string>)).toBe("Poulet yassa, riz blanc will be served on Thursday 19 November. Book your meal.");
+
+    await saveMenu(chef, menuInput("2026-11-19", true)); // simple correction du menu publié
+    expect(await prisma.notification.count({ where: { userId: other.id } })).toBe(1);
+
+    // Publication depuis le planning (brouillon → publié)
+    const draft = await saveMenu(chef, menuInput("2026-11-20", false, "Attiéké poisson"));
+    await setMenuPublished(chef, draft.id, true);
+    expect(await kinds(other)).toEqual(["menu", "menu"]);
+  });
+
+  it("gère les plats préférés : sans doublon, cœur bascule, cloisonné par étudiant", async () => {
+    const a = await makeUser();
+    const b = await makeUser();
+    expect(dishKey("  Poulet Yassa, riz BLANC ")).toBe("poulet yassa riz blanc");
+    expect(matchesFavorite("Attiéké poisson braisé", dishKey("attieke"))).toBe(true);
+    expect(matchesFavorite("Pouletyassa", dishKey("poulet yassa"))).toBe(false);
+    const f = await addFavorite(a, "Attiéké");
+    await addFavorite(a, "attieke");
+    expect(await listFavorites(a)).toHaveLength(1);
+    expect((await toggleFavoriteDish(a, "Attiéké poisson")).added).toBe(false); // déjà couvert : le cœur retire
+    expect(await listFavorites(a)).toHaveLength(0);
+    expect((await toggleFavoriteDish(a, "Alloco")).added).toBe(true);
+    const mine = (await listFavorites(a))[0];
+    expect(await code(removeFavorite(b, mine.id))).toBe("NOT_FOUND");
+    expect(await code(addFavorite(await makeUser({ role: "CHEF" }), "Riz"))).toBe("FORBIDDEN");
+    for (let i = 0; i < 19; i++) await addFavorite(a, `Plat numéro ${i}`);
+    expect(await code(addFavorite(a, "Un plat de trop"))).toBe("LIMIT");
+    expect(f.name).toBe("Attiéké");
   });
 });

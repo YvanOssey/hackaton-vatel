@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { HeartHandshake, ShieldPlus, UserRound } from "lucide-react";
 import { FamilyLinks } from "@/components/espace/FamilyLinks";
+import { FavoritesCard } from "@/components/espace/FavoritesCard";
+import { listFavorites } from "@/server/services/favorites";
 import { PushCard } from "@/components/push/PushControls";
 import { pushPublicKey } from "@/server/push";
 import { ProfileForm } from "@/components/espace/ProfileForm";
@@ -16,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ProfilePage() {
   const user = await requireUser(["CONSUMER"]);
-  const family = await studentFamily(user);
+  const [family, favorites] = await Promise.all([studentFamily(user), listFavorites(user)]);
   const { t } = await getI18n();
   const status = STATUSES[user.status];
   return (
@@ -77,6 +79,7 @@ export default async function ProfilePage() {
           >
             <PushCard publicKey={pushPublicKey()} audience="student" />
           </div>
+          <FavoritesCard favorites={favorites} />
           <Card
             className="anim-rise h-fit"
             style={{ "--d": "180ms" } as React.CSSProperties}

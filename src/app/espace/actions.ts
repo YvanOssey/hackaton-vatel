@@ -6,6 +6,7 @@ import { getI18n } from "@/i18n/server";
 import { msg, run } from "@/server/errors";
 import { regeneratePass, updateProfile } from "@/server/services/account";
 import { createLinkCode, revokeLinkCode, unlink } from "@/server/services/family";
+import { addFavorite, removeFavorite, toggleFavoriteDish } from "@/server/services/favorites";
 import { rateMeal } from "@/server/services/ratings";
 import { cancelReservation, reserveMeal } from "@/server/services/reservations";
 
@@ -73,4 +74,34 @@ export async function unlinkParentAction(parentId: string) {
     await unlink(await currentActor(), parentId);
     revalidatePath("/espace/profil");
   }, "Ce parent ne suit plus votre compte.");
+}
+
+/** Cœur sur un plat du menu */
+export async function toggleFavoriteAction(dishName: string) {
+  return run(
+    async () => {
+      const r = await toggleFavoriteDish(await currentActor(), dishName);
+      revalidatePath("/espace", "layout");
+      return r;
+    },
+    (r) => (r.added ? msg("{dish} ajouté à vos plats préférés : vous recevrez une alerte quand il sera au menu.", { dish: r.name }) : msg("{dish} retiré de vos plats préférés.", { dish: r.name })),
+  );
+}
+
+export async function addFavoriteAction(name: string) {
+  return run(
+    async () => {
+      const f = await addFavorite(await currentActor(), name);
+      revalidatePath("/espace", "layout");
+      return f;
+    },
+    (f) => msg("{dish} ajouté à vos plats préférés : vous recevrez une alerte quand il sera au menu.", { dish: f.name }),
+  );
+}
+
+export async function removeFavoriteAction(id: string) {
+  return run(async () => {
+    await removeFavorite(await currentActor(), id);
+    revalidatePath("/espace", "layout");
+  }, "Plat retiré de vos préférés.");
 }

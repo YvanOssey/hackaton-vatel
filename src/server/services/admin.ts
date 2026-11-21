@@ -137,6 +137,15 @@ export async function adjustBalance(actor: Actor, userId: string, amount: number
         operatorId: actor.id,
       },
     });
+    if (value > 0) {
+      await notify(tx, [userId], {
+        kind: "topup",
+        title: "Portefeuille crédité",
+        body: "{amount:money} ajoutés par l'administration ({reason}). Nouveau solde : {balance:money}.",
+        params: { amount: value, reason: why, balance },
+        href: "/espace/portefeuille",
+      });
+    }
     await audit(tx, actor.id, "wallet.adjust", { type: "User", id: userId }, { amount: value, reason: why });
     return { balance };
   });

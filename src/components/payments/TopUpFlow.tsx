@@ -17,11 +17,15 @@ type Stage =
   | { kind: "success"; amount: number; balance: number | null }
   | { kind: "failed"; reason: string };
 
+/** Logo officiel de l'opérateur (décoratif : son nom est toujours écrit à côté) */
 export function ProviderLogo({ provider, className }: { provider: MobileProvider; className?: string }) {
   const p = MOBILE_PROVIDERS[provider];
-  return (
-    <span className={cn("flex items-center justify-center rounded-xl font-display text-sm font-extrabold", className)} style={{ background: p.bg, color: p.fg }} aria-hidden>
-      {p.short}
+  // Wave : icône carrée sur fond bleu. Orange Money : symbole sur pastille blanche, comme dans l'application de l'opérateur.
+  return provider === "WAVE" ? (
+    <img src={p.logo} alt="" aria-hidden width={192} height={192} className={cn("shrink-0 rounded-xl object-cover", className)} />
+  ) : (
+    <span className={cn("flex shrink-0 items-center justify-center rounded-xl bg-white ring-1 ring-inset ring-slate-200", className)} aria-hidden>
+      <img src={p.logo} alt="" width={252} height={127} className="w-[78%]" />
     </span>
   );
 }
@@ -121,7 +125,7 @@ export function TopUpFlow({ beneficiaryId, onDone }: { beneficiaryId: string; on
         <div className="flex flex-col items-center text-center">
           <div className="relative">
             <span className="anim-ping-soft absolute inset-0 rounded-2xl" style={{ background: p.bg }} aria-hidden />
-            <ProviderLogo provider={stage.provider} className="relative size-16 text-lg" />
+            <ProviderLogo provider={stage.provider} className="relative size-16" />
           </div>
           <p className="mt-4 font-display text-lg font-bold text-slate-900">{t("Validez sur votre téléphone")}</p>
           <p className="mt-1 text-sm text-slate-500">

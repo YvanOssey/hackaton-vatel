@@ -3,7 +3,7 @@ import { normalizeScan } from "@/lib/pass-scan";
 import { z } from "zod";
 import { TOPUP_MAX, TOPUP_MIN } from "@/lib/constants";
 import { allergenConflicts, mealPrice } from "@/lib/rules";
-import { isoToDate } from "@/lib/utils";
+import { elides, isoToDate } from "@/lib/utils";
 import { prisma, type Tx } from "../db";
 import { AppError } from "../errors";
 import { notify, parentIdsOf } from "../notify";
@@ -184,6 +184,20 @@ export async function cashTopUp(actor: Actor, userId: string, amount: number) {
         cashSessionId: session.id,
         operatorId: actor.id,
       },
+    });
+    await notify(tx, [user.id], {
+      kind: "topup",
+      title: "Portefeuille crédité",
+      body: "{amount:money} ajoutés en espèces au comptoir. Nouveau solde : {balance:money}.",
+      params: { amount: value, balance },
+      href: "/espace/portefeuille",
+    });
+    await notify(tx, await parentIdsOf(tx, user.id), {
+      kind: "topup",
+      title: elides(user.firstName) ? "Portefeuille d'{child} rechargé" : "Portefeuille de {child} rechargé",
+      body: "{amount:money} en espèces au comptoir. Nouveau solde : {balance:money}.",
+      params: { child: user.firstName, amount: value, balance },
+      href: "/famille",
     });
   });
   return customerSnapshot(prisma, userId);
