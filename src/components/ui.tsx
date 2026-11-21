@@ -36,7 +36,7 @@ const BADGE_TONES: Record<BadgeTone, string> = {
   success: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
   warning: "bg-amber-50 text-amber-800 ring-amber-600/25",
   danger: "bg-red-50 text-red-700 ring-red-600/20",
-  info: "bg-sky-50 text-sky-700 ring-sky-600/20",
+  info: "bg-brand-50 text-brand-700 ring-brand-600/20",
   brand: "bg-brand-600 text-white ring-brand-700",
 };
 
@@ -55,7 +55,7 @@ const BTN_VARIANTS: Record<ButtonVariant, string> = {
   secondary: "bg-white text-slate-800 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 active:bg-slate-100",
   ghost: "text-slate-700 hover:bg-slate-100 active:bg-slate-200",
   danger: "bg-white text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-50 active:bg-red-100",
-  dark: "bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 shadow-sm",
+  dark: "bg-brand-950 text-white hover:bg-brand-900 active:bg-black shadow-sm",
   destructive: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-[0_6px_16px_-8px_rgba(220,38,38,0.7)]",
 };
 const BTN_SIZES: Record<ButtonSize, string> = {
@@ -132,10 +132,11 @@ export function Stat({
   value: React.ReactNode;
   hint?: React.ReactNode;
   icon?: React.ReactNode;
-  tone?: "neutral" | "success" | "warning" | "danger";
+  tone?: "neutral" | "brand" | "success" | "warning" | "danger";
 }) {
   const tones = {
     neutral: "bg-slate-100 text-slate-600",
+    brand: "bg-brand-50 text-brand-700",
     success: "bg-emerald-50 text-emerald-600",
     warning: "bg-amber-50 text-amber-600",
     danger: "bg-red-50 text-red-600",

@@ -36,7 +36,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           const Icon = { success: CircleCheck, error: CircleAlert, warning: TriangleAlert, info: Info }[t.tone];
           return (
             <div key={t.id} role={t.tone === "error" ? "alert" : "status"} className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-lg animate-[slide-up_200ms_ease-out]">
-              <Icon className={cn("mt-0.5 size-5 shrink-0", { success: "text-emerald-600", error: "text-red-600", warning: "text-amber-600", info: "text-sky-600" }[t.tone])} />
+              <Icon className={cn("mt-0.5 size-5 shrink-0", { success: "text-emerald-600", error: "text-red-600", warning: "text-amber-600", info: "text-brand-600" }[t.tone])} />
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-slate-900">{t.title}</p>
                 {t.description && <p className="mt-0.5 text-sm text-slate-600">{t.description}</p>}

@@ -5,7 +5,7 @@ CantineConnect utilise PostgreSQL via Prisma ; Neon est un PostgreSQL hébergé,
 ## 1. Créer le projet Neon
 
 1. Sur [console.neon.tech](https://console.neon.tech), créez un projet `cantine-connect` :
-   - région **AWS Europe Central 1 (Frankfurt)**, alignée sur la région Vercel `fra1` de `vercel.json` ;
+   - notez la région choisie : la région Vercel de `vercel.json` doit en être proche (`cle1` pour *US East 2 (Ohio)*, la base actuelle ; `fra1` pour *Europe Central 1 (Frankfurt)*, la plus proche de l'Afrique de l'Ouest) ;
    - PostgreSQL **16 ou 17** (la base Docker locale est en 16 ; une copie 16 → 17 fonctionne).
 2. Gardez la base par défaut (`neondb`) ou créez `cantine`.
 3. Dans **Connect**, relevez deux chaînes :

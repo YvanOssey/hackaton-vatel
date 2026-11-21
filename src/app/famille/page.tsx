@@ -78,7 +78,7 @@ function ChildPanel({ child: c, today, threshold, index, i18n }: { child: Child;
     c.today.status === "SERVED"
       ? { icon: CircleCheck, tone: "bg-brand-50 text-brand-700 ring-brand-600/15", text: "A déjeuné aujourd'hui" }
       : c.today.status === "RESERVED"
-        ? { icon: CalendarCheck2, tone: "bg-sky-50 text-sky-700 ring-sky-600/15", text: "Repas réservé aujourd'hui" }
+        ? { icon: CalendarCheck2, tone: "bg-brand-50 text-brand-700 ring-brand-600/15", text: "Repas réservé aujourd'hui" }
         : c.today.menu
           ? { icon: Clock3, tone: "bg-slate-100 text-slate-600 ring-slate-500/10", text: "Pas de réservation aujourd'hui" }
           : { icon: Clock3, tone: "bg-slate-100 text-slate-600 ring-slate-500/10", text: "Pas de service aujourd'hui" };

@@ -96,7 +96,7 @@ export function MenuEditor({ initialDate, today, dates, menus, counts }: { initi
                   onClick={() => setDate(d)}
                   className={cn(
                     "relative rounded-xl px-1 py-2 text-center text-xs ring-1 ring-inset transition sm:text-sm",
-                    d === date ? "bg-slate-900 text-white ring-slate-900" : "text-slate-700 ring-slate-200 hover:bg-slate-50",
+                    d === date ? "bg-brand-950 text-white ring-brand-950" : "text-slate-700 ring-slate-200 hover:bg-slate-50",
                     d < today && d !== date && "opacity-50",
                   )}
                 >

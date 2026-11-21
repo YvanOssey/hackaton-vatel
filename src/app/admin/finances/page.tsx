@@ -39,7 +39,7 @@ export default async function FinancesPage({ searchParams }: { searchParams: Pro
             {t("Au")}
             <input type="date" name="au" defaultValue={to} className={inputCls + " mt-1 h-10 w-40"} />
           </label>
-          <button className="h-11 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white">{t("Afficher")}</button>
+          <button className="h-11 rounded-xl bg-brand-950 px-4 text-sm font-semibold text-white">{t("Afficher")}</button>
           <a href={`/api/admin/export?du=${from}&au=${to}`} className="inline-flex h-11 items-center gap-1.5 rounded-xl px-4 text-sm font-semibold text-slate-800 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
             <Download className="size-4" /> CSV
           </a>

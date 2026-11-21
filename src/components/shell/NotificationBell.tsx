@@ -37,9 +37,9 @@ export type InboxItem = {
 const KIND: Record<string, { icon: LucideIcon; tone: string }> = {
   account: { icon: UserCheck, tone: "bg-brand-100 text-brand-700" },
   low_balance: { icon: TriangleAlert, tone: "bg-amber-100 text-amber-700" },
-  meal_served: { icon: Utensils, tone: "bg-sky-100 text-sky-700" },
+  meal_served: { icon: Utensils, tone: "bg-brand-100 text-brand-700" },
   topup: { icon: Wallet, tone: "bg-brand-100 text-brand-700" },
-  family: { icon: HeartHandshake, tone: "bg-violet-100 text-violet-700" },
+  family: { icon: HeartHandshake, tone: "bg-slate-100 text-slate-800" },
   payment_failed: { icon: XCircle, tone: "bg-red-100 text-red-700" },
   test: { icon: BellRing, tone: "bg-brand-100 text-brand-700" },
 };

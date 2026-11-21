@@ -36,7 +36,7 @@ export default async function KitchenPage() {
       </PageTitle>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label={t("À préparer aujourd'hui")} value={today?.forecast ?? 0} hint={today?.walkInAvg ? t("{count} réservés + ~{walkIn} sans réservation", { count: today?.total ?? 0, walkIn: today.walkInAvg }) : t("{count} réservés", { count: today?.total ?? 0 })} tone="success" icon={<ClipboardList className="size-5" />} />
+        <Stat label={t("À préparer aujourd'hui")} value={today?.forecast ?? 0} hint={today?.walkInAvg ? t("{count} réservés + ~{walkIn} sans réservation", { count: today?.total ?? 0, walkIn: today.walkInAvg }) : t("{count} réservés", { count: today?.total ?? 0 })} tone="brand" icon={<ClipboardList className="size-5" />} />
         <Stat
           label={next ? t("Prévision {day}", { day: dayInline(next.date, { weekday: "long" }) }) : t("Prévision")}
           value={next?.forecast ?? 0}

@@ -35,7 +35,7 @@ export function PosScreen({ state, timezone }: { state: PosState; timezone: stri
 
   return (
     <>
-      <div className="mb-5 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl bg-slate-900 px-5 py-4 text-white">
+      <div className="mb-5 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl bg-brand-950 px-5 py-4 text-white">
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{t("Service")}</p>
           <h1 className="font-semibold">

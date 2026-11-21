@@ -38,8 +38,8 @@ export const isAllergen = (v: string): v is AllergenId => v in ALLERGENS;
 export const allergenLabel = (v: string) => (isAllergen(v) ? ALLERGENS[v].label : v);
 
 export const GROUPS: Record<TariffGroup, { label: string; tone: string }> = {
-  STUDENT: { label: "Étudiant", tone: "bg-sky-50 text-sky-700 ring-sky-600/20" },
-  SCHOLARSHIP: { label: "Boursier", tone: "bg-violet-50 text-violet-700 ring-violet-600/20" },
+  STUDENT: { label: "Étudiant", tone: "bg-brand-50 text-brand-700 ring-brand-600/20" },
+  SCHOLARSHIP: { label: "Boursier", tone: "bg-slate-100 text-slate-800 ring-slate-900/20" },
   STAFF: { label: "Personnel", tone: "bg-amber-50 text-amber-800 ring-amber-600/20" },
   EXTERNAL: { label: "Externe", tone: "bg-slate-100 text-slate-700 ring-slate-500/20" },
 };

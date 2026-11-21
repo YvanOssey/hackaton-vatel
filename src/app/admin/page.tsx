@@ -23,7 +23,7 @@ export default async function AdminHome() {
   const todo = [
     d.pending > 0 && { href: "/admin/comptes?vue=attente", icon: UserCheck, tone: "bg-amber-50 text-amber-700", title: t("{count} inscription(s) à valider", { count: d.pending }), text: t("Vérifier les numéros étudiants") },
     d.lowStock.length > 0 && { href: "/cuisine/stock", icon: Package, tone: "bg-red-50 text-red-700", title: t("{count} article(s) sous le seuil", { count: d.lowStock.length }), text: d.lowStock.map((s) => s.name).join(", ") },
-    d.openSessions.length > 0 && { href: "/admin/caisses", icon: Banknote, tone: "bg-sky-50 text-sky-700", title: t("{count} caisse(s) ouverte(s)", { count: d.openSessions.length }), text: t("À clôturer en fin de service") },
+    d.openSessions.length > 0 && { href: "/admin/caisses", icon: Banknote, tone: "bg-brand-50 text-brand-700", title: t("{count} caisse(s) ouverte(s)", { count: d.openSessions.length }), text: t("À clôturer en fin de service") },
   ].filter(Boolean) as { href: string; icon: typeof UserCheck; tone: string; title: string; text: string }[];
 
   return (
@@ -34,7 +34,7 @@ export default async function AdminHome() {
         </Link>
       </PageTitle>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label={t("Repas du jour")} value={expected} icon={<Utensils className="size-5" />} tone="success" hint={t("{served} servis · {reserved} attendus", { served: d.reservations.served, reserved: d.reservations.reserved }) + (d.reservations.cancelled ? ` · ${t("{count} annulés", { count: d.reservations.cancelled })}` : "")} />
+        <Stat label={t("Repas du jour")} value={expected} icon={<Utensils className="size-5" />} tone="brand" hint={t("{served} servis · {reserved} attendus", { served: d.reservations.served, reserved: d.reservations.reserved }) + (d.reservations.cancelled ? ` · ${t("{count} annulés", { count: d.reservations.cancelled })}` : "")} />
         <Stat label={t("Ventes du jour")} value={money(d.sales)} icon={<Receipt className="size-5" />} hint={t("{count} repas débités", { count: d.mealCount })} />
         <Stat
           label={t("Rechargements du jour")}
@@ -62,7 +62,7 @@ export default async function AdminHome() {
                   <span className="size-2.5 rounded-sm bg-brand-500" /> {t("Réservés")}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-sm bg-amber-400" /> {t("Sans réservation")}
+                  <span className="size-2.5 rounded-sm bg-brand-300" /> {t("Sans réservation")}
                 </span>
               </div>
             }
@@ -80,7 +80,7 @@ export default async function AdminHome() {
                         <div className="h-full bg-slate-100" />
                       ) : (
                         <>
-                          <div className="bg-amber-400" style={{ height: `${(x.walkIn / total) * 100}%` }} />
+                          <div className="bg-brand-300" style={{ height: `${(x.walkIn / total) * 100}%` }} />
                           <div className={cn("flex-1", isToday ? "bg-brand-600" : "bg-brand-500")} />
                         </>
                       )}
@@ -115,7 +115,7 @@ export default async function AdminHome() {
             </ul>
           )}
           <div className="flex items-center gap-2 border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
-            <HeartHandshake className="size-4 text-violet-500" /> {t(d.parents > 1 ? "{count} comptes parents actifs" : "{count} compte parent actif", { count: d.parents })}
+            <HeartHandshake className="size-4 text-slate-800" /> {t(d.parents > 1 ? "{count} comptes parents actifs" : "{count} compte parent actif", { count: d.parents })}
           </div>
         </Card>
       </div>

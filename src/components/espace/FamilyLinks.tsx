@@ -64,7 +64,7 @@ export function FamilyLinks({ parents, activeCodeExpiresAt }: { parents: Parent[
           </div>
         ) : (
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 ring-1 ring-violet-600/10">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-800 ring-1 ring-slate-900/10">
               <KeyRound className="size-5" />
             </span>
             <div className="min-w-0 flex-1 text-sm">

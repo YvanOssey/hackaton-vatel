@@ -170,7 +170,7 @@ En production, placez un reverse proxy HTTPS (Caddy, Nginx) devant le port 3000 
 
 **Vercel + Neon** (recommandé)
 
-1. **Base Neon** : sur [neon.tech](https://neon.tech), créez un projet `cantine-connect` en région **AWS Europe Central 1 (Frankfurt)**, la plus proche de l'Afrique de l'Ouest et alignée sur la région Vercel `fra1` déclarée dans `vercel.json`.
+1. **Base Neon** : sur [neon.tech](https://neon.tech), créez un projet `cantine-connect` et notez sa région. La région Vercel déclarée dans `vercel.json` doit être la plus proche de la base : `cle1` pour Neon *US East 2 (Ohio)*, la région actuelle, ou `fra1` pour *Europe Central 1 (Frankfurt)*, la plus proche de l'Afrique de l'Ouest.
 2. **Les deux chaînes de connexion** : dans *Connection Details*, copiez :
    - la chaîne **Pooled connection** (hôte contenant `-pooler`) → `DATABASE_URL`, en ajoutant à la fin `&pgbouncer=true&connect_timeout=15` ;
    - la chaîne **directe** (option *Connection pooling* désactivée) → `DIRECT_URL`.

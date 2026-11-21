@@ -48,7 +48,8 @@ export function initials(first: string, last: string) {
 }
 
 /** Couleur d'avatar stable dérivée de l'identifiant */
-const AVATAR_COLORS = ["#059669", "#0284c7", "#7c3aed", "#d97706", "#dc2626", "#0d9488", "#4f46e5", "#db2777", "#65a30d", "#ea580c"];
+// Teintes de la charte Vatel (noir et bleus profonds) : texte blanc lisible sur chacune
+const AVATAR_COLORS = ["#1d1d1b", "#1f6fa8", "#1c5a89", "#1b4a70", "#475569", "#2b2b29", "#334155"];
 export function avatarColor(id: string) {
   let h = 0;
   for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
