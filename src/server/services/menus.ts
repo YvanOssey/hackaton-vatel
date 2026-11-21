@@ -86,6 +86,7 @@ export async function deleteMenu(actor: Actor, menuId: string) {
   }
   await prisma.$transaction(async (tx) => {
     await tx.menu.delete({ where: { id: menuId } });
+    await tx.menuPhoto.deleteMany({ where: { date: menu.date } });
     await audit(tx, actor.id, "menu.delete", { type: "Menu", id: menuId });
   });
 }

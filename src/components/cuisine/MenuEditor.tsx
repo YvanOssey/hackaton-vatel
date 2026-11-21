@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { Eye, EyeOff, Leaf, Lock, Pencil, Send, Trash2 } from "lucide-react";
+import { Eye, EyeOff, ImagePlus, Leaf, LoaderCircle, Lock, Pencil, RefreshCw, Send, Trash2 } from "lucide-react";
 import type { Course, MenuStatus, NutriScore } from "@prisma/client";
-import { deleteMenuAction, saveMenuAction, setPublishedAction } from "@/app/cuisine/actions";
+import { deleteMenuAction, removeDishPhotoAction, saveMenuAction, setPublishedAction, uploadDishPhotoAction } from "@/app/cuisine/actions";
+import { DishPhoto } from "@/components/DishPhoto";
 import { AllergenPicker } from "@/components/AllergenPicker";
-import { useResultToast } from "@/components/toast";
+import { useResultToast, useToast } from "@/components/toast";
 import { Badge, Button, Card, CardHeader, ConfirmDialog, NutriBadge, inputCls } from "@/components/ui";
 import { COURSES, NUTRI_COLORS } from "@/lib/constants";
+import { ImageReadError, compressImage } from "@/lib/image";
+import { photoKey } from "@/lib/photos";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/i18n/client";
 
@@ -17,7 +20,7 @@ const KEYS = { STARTER: "starter", MAIN: "main", DESSERT: "dessert" } as const;
 const empty = (): DishInput => ({ name: "", allergens: [], kcal: 0, vegetarian: false });
 const PLACEHOLDERS: Record<Course, string> = { STARTER: "Ex. : Salade d'avocat…", MAIN: "Ex. : Poulet yassa, riz blanc…", DESSERT: "Ex. : Salade de fruits frais…" };
 
-export function MenuEditor({ initialDate, today, dates, menus, counts }: { initialDate?: string; today: string; dates: string[]; menus: Menu[]; counts: Record<string, number> }) {
+export function MenuEditor({ initialDate, today, dates, menus, counts, photos }: { initialDate?: string; today: string; dates: string[]; menus: Menu[]; counts: Record<string, number>; photos: Record<string, string> }) {
   const { t, day: formatDay } = useI18n();
   const editable = dates.filter((d) => d >= today);
   const [date, setDateState] = useState(initialDate && dates.includes(initialDate) ? initialDate : (editable.find((d) => !menus.some((m) => m.date === d)) ?? editable[0] ?? dates[0]));
@@ -123,6 +126,7 @@ export function MenuEditor({ initialDate, today, dates, menus, counts }: { initi
                 <div className="mt-3">
                   <AllergenPicker value={dishes[c].allergens} onChange={(v) => update(c, { allergens: v })} disabled={past} />
                 </div>
+                <PhotoField date={date} course={c} name={dishes[c].name} src={photos[photoKey(date, c)] ?? null} readOnly={past} />
                 <label className="mt-2 inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm text-slate-600">
                   <input type="checkbox" checked={dishes[c].vegetarian} onChange={(e) => update(c, { vegetarian: e.target.checked })} className="size-4 rounded accent-brand-600" />
                   <Leaf className="size-4 text-brand-600" /> {t("Végétarien")}
@@ -225,6 +229,93 @@ export function MenuEditor({ initialDate, today, dates, menus, counts }: { initi
         confirmLabel={t("Supprimer le menu")}
       >
         {toDelete && t("Le menu du {day} sera définitivement supprimé. Les étudiants ne le verront plus.", { day: formatDay(toDelete.date, { weekday: "long", day: "numeric", month: "long" }) })}
+      </ConfirmDialog>
+    </div>
+  );
+}
+
+/**
+ * Photo d'un plat : envoyée dès qu'elle est choisie (indépendamment de l'enregistrement du menu),
+ * après compression dans le navigateur. Rattachée au jour et au plat.
+ */
+function PhotoField({ date, course, name, src, readOnly }: { date: string; course: Course; name: string; src: string | null; readOnly: boolean }) {
+  const { t } = useI18n();
+  const toast = useToast();
+  const show = useResultToast();
+  const [busy, setBusy] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+  const [pending, start] = useTransition();
+  const label = t("Photo — {course}", { course: t(COURSES[course]) });
+
+  const upload = async (file: File | undefined) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const blob = await compressImage(file);
+      const form = new FormData();
+      form.set("date", date);
+      form.set("course", course);
+      form.set("photo", blob, "photo");
+      show(await uploadDishPhotoAction(form), "Photo ajoutée");
+    } catch (e) {
+      const tooLarge = e instanceof ImageReadError && e.message === "too-large";
+      toast({ tone: "error", title: t("Photo non envoyée"), description: t(tooLarge ? "Photo trop lourde (1,5 Mo au plus) : choisissez une image plus petite." : "Format non pris en charge : utilisez une photo JPEG, PNG ou WebP.") });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const picker = (text: string, icon: React.ReactNode, cls: string) => (
+    <label className={cn("hit relative inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl px-3 text-sm font-semibold transition focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-600", busy && "pointer-events-none opacity-60", cls)}>
+      {busy ? <LoaderCircle className="size-4 animate-spin" /> : icon}
+      {busy ? t("Envoi…") : text}
+      <input
+        type="file"
+        accept="image/*"
+        aria-label={label}
+        className="sr-only"
+        disabled={busy}
+        onChange={(e) => {
+          void upload(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+    </label>
+  );
+
+  if (readOnly && !src) return null;
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-3">
+      {src ? (
+        <DishPhoto dish={{ course, name: name || t(COURSES[course]), photo: src }} className="h-20 w-28 shrink-0 rounded-xl ring-1 ring-slate-900/[0.06]" />
+      ) : null}
+      {!readOnly &&
+        (src ? (
+          <div className="flex flex-wrap gap-1">
+            {picker(t("Remplacer"), <RefreshCw className="size-4" />, "text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-slate-50")}
+            <button type="button" disabled={busy || pending} onClick={() => setConfirm(true)} className="hit inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-red-600 hover:bg-red-50">
+              <Trash2 className="size-4" /> {t("Retirer")}
+            </button>
+          </div>
+        ) : (
+          <div>
+            {picker(t("Ajouter une photo"), <ImagePlus className="size-4" />, "border border-dashed border-slate-300 text-slate-700 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700")}
+            <p className="mt-1 text-xs text-slate-500">{t("JPEG, PNG ou WebP · réduite automatiquement avant l'envoi")}</p>
+          </div>
+        ))}
+      <ConfirmDialog
+        open={confirm}
+        pending={pending}
+        onClose={() => setConfirm(false)}
+        onConfirm={() =>
+          start(async () => {
+            if (show(await removeDishPhotoAction(date, course), "Photo retirée")) setConfirm(false);
+          })
+        }
+        title={t("Retirer cette photo ?")}
+        confirmLabel={t("Retirer la photo")}
+      >
+        {t("Les étudiants ne verront plus la photo de ce plat.")}
       </ConfirmDialog>
     </div>
   );

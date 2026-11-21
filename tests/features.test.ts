@@ -1,4 +1,5 @@
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { ZodError } from "zod";
 import { prisma } from "@/server/db";
 import { register } from "@/server/services/account";
 import { approveUser } from "@/server/services/admin";
@@ -7,7 +8,10 @@ import { createLinkCode, linkChild, studentFamily, unlink } from "@/server/servi
 import { inbox, markRead } from "@/server/services/notifications";
 import { confirmTopUp, initiateTopUp } from "@/server/services/payments";
 import { serveMeal } from "@/server/services/pos";
-import { familyOverview, kitchenOverview } from "@/server/services/queries";
+import { consumerOverview, familyOverview, kitchenOverview } from "@/server/services/queries";
+import { deleteMenu } from "@/server/services/menus";
+import { readMenuPhoto, removeMenuPhoto, setMenuPhoto, sniffImage } from "@/server/services/photos";
+import { MAX_PHOTO_BYTES } from "@/lib/photos";
 import { rateMeal, ratingsSummary } from "@/server/services/ratings";
 import { reserveMeal } from "@/server/services/reservations";
 import { TODAY, balanceOf, makeMenu, makeUser, resetDb, setTime } from "./helpers";
@@ -145,5 +149,60 @@ describe("Repas, notifications et notes", () => {
     const today = (await kitchenOverview(chef)).days.find((d) => d.date === TODAY)!;
     expect(today.walkInAvg).toBe(2);
     expect(today.forecast).toBe(today.total + 2);
+  });
+});
+
+describe("Photos des plats", () => {
+  // En-têtes réels de fichiers (le contenu suffit au contrôle de format)
+  const jpeg = () => new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3, 4, 5, 6]);
+  const webp = () => new Uint8Array([...Buffer.from("RIFF"), 0, 0, 0, 0, ...Buffer.from("WEBPVP8 "), 1, 2]);
+  const svg = () => new Uint8Array(Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'));
+
+  it("le chef ajoute une photo, visible des étudiants sur le plat du menu", async () => {
+    const chef = await makeUser({ role: "CHEF" });
+    const student = await makeUser({ balance: 5000 });
+    await makeMenu(TODAY);
+    const { url } = await setMenuPhoto(chef, { date: TODAY, course: "MAIN" }, jpeg());
+    expect(url.startsWith(`/api/photos/${TODAY}/MAIN?v=`)).toBe(true);
+    const day = (await consumerOverview(student)).days.find((d) => d.date === TODAY)!;
+    expect(day.menu!.dishes.find((d) => d.course === "MAIN")!.photo).toBe(url);
+    expect(day.menu!.dishes.find((d) => d.course === "STARTER")!.photo).toBeNull();
+    expect((await readMenuPhoto(TODAY, "MAIN"))!.mime).toBe("image/jpeg");
+    expect(await prisma.auditLog.count({ where: { action: "menu.photo_set" } })).toBe(1);
+  });
+
+  it("accepte une photo avant l'enregistrement du menu et la remplace sans doublon", async () => {
+    const chef = await makeUser({ role: "CHEF" });
+    await setMenuPhoto(chef, { date: "2026-11-20", course: "DESSERT" }, jpeg());
+    await setMenuPhoto(chef, { date: "2026-11-20", course: "DESSERT" }, webp());
+    expect(await prisma.menuPhoto.count()).toBe(1);
+    expect((await readMenuPhoto("2026-11-20", "DESSERT"))!.mime).toBe("image/webp");
+    expect((await kitchenOverview(chef)).photos["2026-11-20:DESSERT"]).toContain("/api/photos/2026-11-20/DESSERT?v=");
+  });
+
+  it("refuse les étudiants, les jours passés, les formats non image et les fichiers trop lourds", async () => {
+    const chef = await makeUser({ role: "CHEF" });
+    const student = await makeUser();
+    expect(await code(setMenuPhoto(student, { date: TODAY, course: "MAIN" }, jpeg()))).toBe("FORBIDDEN");
+    expect(await code(setMenuPhoto(chef, { date: "2026-11-16", course: "MAIN" }, jpeg()))).toBe("PAST");
+    expect(await code(setMenuPhoto(chef, { date: TODAY, course: "MAIN" }, svg()))).toBe("BAD_FORMAT");
+    expect(await code(setMenuPhoto(chef, { date: TODAY, course: "MAIN" }, new Uint8Array(0)))).toBe("EMPTY");
+    const big = new Uint8Array(MAX_PHOTO_BYTES + 1);
+    big.set([0xff, 0xd8, 0xff]);
+    expect(await code(setMenuPhoto(chef, { date: TODAY, course: "MAIN" }, big))).toBe("TOO_LARGE");
+    await expect(setMenuPhoto(chef, { date: TODAY, course: "SOUPE" }, jpeg())).rejects.toBeInstanceOf(ZodError);
+    expect(sniffImage(svg())).toBeNull();
+    expect(await prisma.menuPhoto.count()).toBe(0);
+  });
+
+  it("retire une photo une seule fois, et la suppression d'un menu emporte ses photos", async () => {
+    const chef = await makeUser({ role: "CHEF" });
+    const menu = await makeMenu("2026-11-19", { published: false });
+    await setMenuPhoto(chef, { date: "2026-11-19", course: "STARTER" }, jpeg());
+    await setMenuPhoto(chef, { date: "2026-11-19", course: "MAIN" }, jpeg());
+    await removeMenuPhoto(chef, { date: "2026-11-19", course: "STARTER" });
+    expect(await code(removeMenuPhoto(chef, { date: "2026-11-19", course: "STARTER" }))).toBe("NOT_FOUND");
+    await deleteMenu(chef, menu.id);
+    expect(await prisma.menuPhoto.count()).toBe(0);
   });
 });

@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Banknote, ClipboardList, Clock, Lock, ScanLine, Search, Utensils } from "lucide-react";
+import type { Course } from "@prisma/client";
 import type { CustomerSnapshot } from "@/server/services/pos";
 import { customerAction, scanAction, searchAction } from "@/app/caisse/actions";
+import { DishPhoto } from "@/components/DishPhoto";
 import { useToast } from "@/components/toast";
 import { Avatar, Button, Card, CardHeader, EmptyState } from "@/components/ui";
 import { COURSES, METHODS } from "@/lib/constants";
@@ -16,7 +18,7 @@ type JournalEntry = { id: string; type: string; method: string; amount: number; 
 export type PosState = {
   today: string;
   session: { id: string; openedAt: string; openingFloat: number };
-  menu: { dishes: { id: string; course: string; name: string }[] } | null;
+  menu: { dishes: { id: string; course: Course; name: string; photo?: string | null }[] } | null;
   reservedCount: number;
   servedCount: number;
   totals: { mealCount: number; mealTotal: number; cashTopupCount: number; cashIn: number; expectedCash: number };
@@ -85,9 +87,12 @@ export function PosScreen({ state, timezone }: { state: PosState; timezone: stri
           {state.menu ? (
             <Card className="grid grid-cols-1 gap-4 p-5 text-sm sm:grid-cols-3">
               {state.menu.dishes.map((d) => (
-                <div key={d.id}>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t(COURSES[d.course as keyof typeof COURSES] ?? d.course)}</p>
-                  <p className="mt-0.5 font-medium text-slate-800">{d.name}</p>
+                <div key={d.id} className="flex items-center gap-3">
+                  {d.photo && <DishPhoto dish={{ ...d, photo: d.photo }} className="size-12 shrink-0 rounded-lg ring-1 ring-slate-900/[0.06]" />}
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{t(COURSES[d.course])}</p>
+                    <p className="mt-0.5 font-medium text-slate-800">{d.name}</p>
+                  </div>
                 </div>
               ))}
             </Card>

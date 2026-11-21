@@ -7,12 +7,19 @@ import { AppError } from "../errors";
 import { passToken } from "../pass";
 import { clock, dayRange } from "../time";
 import { currentCashSession, sessionTotals } from "./cash";
+import { photoIndex } from "./photos";
+import { photoKey } from "@/lib/photos";
 import { type Actor, assertRole, committedAmount, getSettings } from "./common";
 
 const dishOrder = { STARTER: 0, MAIN: 1, DESSERT: 2 } as const;
 
-function serializeMenu<T extends { date: Date; dishes: { course: keyof typeof dishOrder }[] }>(m: T) {
-  return { ...m, date: dateToIso(m.date), dishes: [...m.dishes].sort((a, b) => dishOrder[a.course] - dishOrder[b.course]) };
+/** Menu prêt à afficher : date ISO, plats dans l'ordre, adresse de la photo de chaque plat (ou null) */
+type SerializedMenu<M extends { dishes: unknown[] }> = Omit<M, "date" | "dishes"> & { date: string; dishes: (M["dishes"][number] & { photo: string | null })[] };
+
+function serializeMenu<M extends { date: Date; dishes: { course: keyof typeof dishOrder }[] }>(m: M, photos: Map<string, string> = new Map()): SerializedMenu<M> {
+  const date = dateToIso(m.date);
+  const dishes = [...m.dishes].sort((a, b) => dishOrder[a.course] - dishOrder[b.course]).map((d) => ({ ...d, photo: photos.get(photoKey(date, d.course)) ?? null }));
+  return { ...m, date, dishes } as unknown as SerializedMenu<M>;
 }
 
 // ─── Usager ───────────────────────────────────────────────────────────────
@@ -29,7 +36,7 @@ export async function consumerOverview(actor: Actor) {
     prisma.menu.findMany({ where: { status: "PUBLISHED", date: { gte: from, lte: to } }, include: { dishes: true }, orderBy: { date: "asc" } }),
     prisma.reservation.findMany({ where: { userId: actor.id, date: { gte: from, lte: to }, status: { not: "CANCELLED" } }, include: { rating: true } }),
   ]);
-  const committed = await committedAmount(prisma, actor.id, now.today);
+  const [committed, photos] = await Promise.all([committedAmount(prisma, actor.id, now.today), photoIndex(menus.map((m) => m.date))]);
   const days = Array.from({ length: 14 }, (_, i) => addDays(monday, i)).filter((d) => {
     const dow = isoToDate(d).getUTCDay();
     return (dow !== 0 && dow !== 6) || menus.some((m) => dateToIso(m.date) === d);
@@ -63,7 +70,7 @@ export async function consumerOverview(actor: Actor) {
       const res = reservations.find((r) => dateToIso(r.date) === date);
       return {
         date,
-        menu: menu ? serializeMenu(menu) : null,
+        menu: menu ? serializeMenu(menu, photos) : null,
         reservation: res ? { id: res.id, status: res.status, price: res.price, walkIn: res.walkIn, rating: res.rating ? { score: res.rating.score, comment: res.rating.comment } : null } : null,
         booking: bookingState(date, now, settings.cutoffTime, settings.bookingHorizonDays),
       };
@@ -117,7 +124,10 @@ export async function familyOverview(actor: Actor) {
         prisma.menu.findUnique({ where: { date: todayDate }, include: { dishes: true } }),
       ]);
       const mealMenus = await prisma.menu.findMany({ where: { date: { in: meals.map((m) => m.date) } }, include: { dishes: true } });
-      const todayRes = await prisma.reservation.findUnique({ where: { userId_date: { userId: child.id, date: todayDate } } });
+      const [todayRes, photos] = await Promise.all([
+        prisma.reservation.findUnique({ where: { userId_date: { userId: child.id, date: todayDate } } }),
+        photoIndex([todayDate]),
+      ]);
       return {
         ...child,
         committed,
@@ -125,7 +135,7 @@ export async function familyOverview(actor: Actor) {
         low: child.balance < settings.lowBalanceThreshold,
         today: {
           status: todayRes && todayRes.status !== "CANCELLED" ? todayRes.status : null,
-          menu: todayMenu?.status === "PUBLISHED" ? serializeMenu(todayMenu) : null,
+          menu: todayMenu?.status === "PUBLISHED" ? serializeMenu(todayMenu, photos) : null,
         },
         upcoming: upcoming.map((r) => ({ id: r.id, date: dateToIso(r.date), price: r.price })),
         meals: meals.map((m) => {
@@ -153,13 +163,14 @@ export async function posState(actor: Actor) {
   const now = clock();
   const session = await currentCashSession(prisma, actor.id);
   const date = isoToDate(now.today);
-  const [menu, reservedCount, servedCount] = await Promise.all([
+  const [menu, reservedCount, servedCount, photos] = await Promise.all([
     prisma.menu.findUnique({ where: { date }, include: { dishes: true } }),
     prisma.reservation.count({ where: { date, status: { in: ["RESERVED", "SERVED"] } } }),
     prisma.reservation.count({ where: { date, status: "SERVED" } }),
+    photoIndex([date]),
   ]);
   if (!session) {
-    return { today: now.today, session: null, menu: menu?.status === "PUBLISHED" ? serializeMenu(menu) : null, reservedCount, servedCount, journal: [], totals: null };
+    return { today: now.today, session: null, menu: menu?.status === "PUBLISHED" ? serializeMenu(menu, photos) : null, reservedCount, servedCount, journal: [], totals: null };
   }
   const [journal, totals] = await Promise.all([
     prisma.transaction.findMany({
@@ -173,7 +184,7 @@ export async function posState(actor: Actor) {
   return {
     today: now.today,
     session: { id: session.id, openedAt: session.openedAt.toISOString(), openingFloat: session.openingFloat },
-    menu: menu?.status === "PUBLISHED" ? serializeMenu(menu) : null,
+    menu: menu?.status === "PUBLISHED" ? serializeMenu(menu, photos) : null,
     reservedCount,
     servedCount,
     totals,
@@ -190,7 +201,7 @@ export async function kitchenOverview(actor: Actor) {
   const from = isoToDate(monday);
   const to = isoToDate(addDays(monday, 13));
   const history = isoToDate(addDays(monday, -28));
-  const [menus, counts, todayOrders, stock, walkIns] = await Promise.all([
+  const [menus, counts, todayOrders, stock, walkIns, photos] = await Promise.all([
     prisma.menu.findMany({ where: { date: { gte: from, lte: to } }, include: { dishes: true }, orderBy: { date: "asc" } }),
     prisma.reservation.groupBy({ by: ["date", "status"], where: { date: { gte: from, lte: to }, status: { in: ["RESERVED", "SERVED"] } }, _count: true }),
     prisma.reservation.findMany({
@@ -201,6 +212,8 @@ export async function kitchenOverview(actor: Actor) {
     prisma.stockItem.findMany({ orderBy: { name: "asc" } }),
     // Historique des passages sans réservation (4 semaines) pour estimer la production
     prisma.reservation.groupBy({ by: ["date", "walkIn"], where: { date: { gte: history, lt: isoToDate(now.today) }, status: "SERVED" }, _count: true }),
+    // Photos des 14 jours, même sans menu enregistré (le chef peut ajouter la photo d'abord)
+    photoIndex(Array.from({ length: 14 }, (_, i) => isoToDate(addDays(monday, i)))),
   ]);
   const todayReservants = todayOrders;
   const allergenCounts: Record<string, number> = {};
@@ -211,7 +224,8 @@ export async function kitchenOverview(actor: Actor) {
   });
   return {
     today: now.today,
-    menus: menus.map(serializeMenu),
+    menus: menus.map((m) => serializeMenu(m, photos)),
+    photos: Object.fromEntries(photos),
     days: days.map((date) => {
       const c = counts.filter((x) => dateToIso(x.date) === date);
       const served = c.find((x) => x.status === "SERVED")?._count ?? 0;
@@ -261,7 +275,7 @@ export async function adminDashboard(actor: Actor) {
       revenue: rows.reduce((acc, r) => acc + (r._sum.price ?? 0), 0),
     };
   });
-  const [byStatus, txGroups, pending, lowBalance, stock, openSessions] = await Promise.all([
+  const [byStatus, txGroups, pending, lowBalance, stock, openSessions, todayMenu, photos] = await Promise.all([
     prisma.reservation.groupBy({ by: ["status"], where: { date }, _count: true }),
     prisma.transaction.groupBy({ by: ["type", "method"], where: { createdAt: { gte: start, lt: end } }, _sum: { amount: true }, _count: true }),
     prisma.user.count({ where: { status: "PENDING", role: "CONSUMER" } }),
@@ -273,6 +287,8 @@ export async function adminDashboard(actor: Actor) {
     }),
     prisma.stockItem.findMany(),
     prisma.cashSession.findMany({ where: { status: "OPEN" }, include: { cashier: { select: { firstName: true, lastName: true } } } }),
+    prisma.menu.findUnique({ where: { date }, include: { dishes: true } }),
+    photoIndex([date]),
   ]);
   const count = (s: string) => byStatus.find((b) => b.status === s)?._count ?? 0;
   const sum = (type: string, method?: string) =>
@@ -294,6 +310,7 @@ export async function adminDashboard(actor: Actor) {
     lowBalanceThreshold: settings.lowBalanceThreshold,
     lowStock: stock.filter((s) => s.qty < s.minQty),
     openSessions: openSessions.map((s) => ({ id: s.id, openedAt: s.openedAt.toISOString(), cashier: s.cashier, openingFloat: s.openingFloat })),
+    menu: todayMenu ? { status: todayMenu.status, dishes: serializeMenu(todayMenu, photos).dishes.map((x) => ({ course: x.course, name: x.name, photo: x.photo })) } : null,
   };
 }
 

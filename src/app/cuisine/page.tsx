@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, CheckCircle2, ClipboardList, Leaf, MessageSquareQuote, Package, ShieldAlert, Sparkles, Star } from "lucide-react";
+import { MenuGallery } from "@/components/DishPhoto";
 import { Avatar, Badge, Card, CardHeader, EmptyState, PageTitle, Stars, Stat } from "@/components/ui";
 import { allergenLabel } from "@/lib/constants";
 import { addDays, cn } from "@/lib/utils";
@@ -52,6 +53,23 @@ export default async function KitchenPage() {
           icon={<Star className="size-5" />}
         />
       </div>
+
+      {todayMenu && (
+        <Card className="mt-5">
+          <CardHeader
+            title={t("Menu du jour")}
+            subtitle={todayMenu.status === "PUBLISHED" ? t("Tel que les étudiants le voient") : t("Brouillon : pas encore visible des étudiants")}
+            action={
+              <Link href={`/cuisine/menus?jour=${k.today}`} className="hit inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-brand-700 hover:underline">
+                {t("Modifier les photos")} <ArrowRight className="size-4" />
+              </Link>
+            }
+          />
+          <div className="p-5">
+            <MenuGallery dishes={todayMenu.dishes} />
+          </div>
+        </Card>
+      )}
 
       <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
         <Card className="lg:col-span-2">

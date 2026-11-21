@@ -182,6 +182,21 @@ model Dish {
   @@unique([menuId, course])
 }
 
+/// Photo d'un plat, rattachée au jour et au plat (et non au Dish) :
+/// le chef peut l'ajouter avant même d'avoir enregistré le menu.
+/// Table séparée pour ne jamais charger les images avec les menus.
+model MenuPhoto {
+  date        DateTime @db.Date
+  course      Course
+  mime        String
+  data        Bytes
+  size        Int
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+
+  @@id([date, course])
+}
+
 model Reservation {
   id               String            @id @default(cuid())
   userId           String

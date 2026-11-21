@@ -16,7 +16,7 @@ export default async function MenusPage({ searchParams }: { searchParams: Promis
   return (
     <>
       <PageTitle eyebrow={t("Cuisine")} title={t("Menus de la quinzaine")} />
-      <MenuEditor initialDate={jour} today={k.today} dates={k.days.map((d) => d.date)} menus={k.menus} counts={Object.fromEntries(k.days.map((d) => [d.date, d.total]))} />
+      <MenuEditor initialDate={jour} today={k.today} dates={k.days.map((d) => d.date)} menus={k.menus} counts={Object.fromEntries(k.days.map((d) => [d.date, d.total]))} photos={k.photos} />
     </>
   );
 }

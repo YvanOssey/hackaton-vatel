@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   // Test sur téléphone en Wi-Fi local (npm run dev ouvert via l'IP du PC)
+  // Photos des plats envoyées par action serveur (1,5 Mo au plus après compression dans le navigateur)
+  experimental: { serverActions: { bodySizeLimit: "2mb" } },
   allowedDevOrigins: ["192.168.*.*", "10.*.*.*", "172.*.*.*"],
   async headers() {
     return [

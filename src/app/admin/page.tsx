@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Banknote, BellRing, ChevronRight, ClipboardList, HeartHandshake, Package, Receipt, Smartphone, Star, UserCheck, Utensils } from "lucide-react";
+import { MenuGallery } from "@/components/DishPhoto";
 import { Avatar, Card, CardHeader, EmptyState, PageTitle, Stat } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { requireUser } from "@/server/auth";
@@ -50,6 +51,23 @@ export default async function AdminHome() {
           hint={d.satisfaction.count ? t("{count} avis", { count: d.satisfaction.count }) : t("Pas encore d'avis")}
         />
       </div>
+
+      {d.menu && (
+        <Card className="mt-5">
+          <CardHeader
+            title={t("Menu du jour")}
+            subtitle={d.menu.status === "PUBLISHED" ? t("Tel que les étudiants le voient") : t("Brouillon : pas encore visible des étudiants")}
+            action={
+              <Link href={`/cuisine/menus?jour=${d.today}`} className="hit inline-flex min-h-9 items-center gap-1 text-sm font-semibold text-brand-700 hover:underline">
+                {t("Modifier les photos")} <ArrowRight className="size-4" />
+              </Link>
+            }
+          />
+          <div className="p-5">
+            <MenuGallery dishes={d.menu.dishes} />
+          </div>
+        </Card>
+      )}
 
       <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-3">
         <Card className="lg:col-span-2">

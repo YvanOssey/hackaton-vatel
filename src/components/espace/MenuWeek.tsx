@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { CalendarX2, Check, CircleCheck, Clock, Flame, Leaf, Lock, MessageSquareText, TriangleAlert } from "lucide-react";
 import type { Course, NutriScore, ReservationStatus } from "@prisma/client";
 import { cancelAction, rateMealAction, reserveAction } from "@/app/espace/actions";
+import { DishPhoto } from "@/components/DishPhoto";
 import { useResultToast } from "@/components/toast";
 import { AllergenChip, Badge, Button, Card, NutriBadge, Segmented, Stars } from "@/components/ui";
 import { COURSES, RATING_LABELS, allergenLabel } from "@/lib/constants";
@@ -12,7 +13,7 @@ import { addDays, cn, delay, isoToDate, mondayOf } from "@/lib/utils";
 import { useI18n } from "@/i18n/client";
 import { rich } from "@/i18n/rich";
 
-type Dish = { id: string; course: Course; name: string; allergens: string[]; kcal: number; vegetarian: boolean };
+type Dish = { id: string; course: Course; name: string; allergens: string[]; kcal: number; vegetarian: boolean; photo?: string | null };
 export type Day = {
   date: string;
   menu: { nutriScore: NutriScore; dishes: Dish[] } | null;
@@ -82,6 +83,8 @@ function DayCard({ day, today, price, userAllergens, canBook }: { day: Day } & P
   const weekday = fmtDay(day.date, { weekday: "long" });
   const month = fmtDay(day.date, { month: "short" }).replace(".", "");
   const reason = booking.open ? "" : t(booking.reason, booking.params);
+  // Couverture : photo du plat principal, sinon la première disponible
+  const cover = menu ? (menu.dishes.find((x) => x.course === "MAIN" && x.photo) ?? menu.dishes.find((x) => x.photo)) : undefined;
 
   const status =
     reservation?.status === "SERVED" ? (
@@ -114,21 +117,32 @@ function DayCard({ day, today, price, userAllergens, canBook }: { day: Day } & P
 
       {menu ? (
         <>
+          {cover?.photo && (
+            <div className="px-4 pb-3">
+              <DishPhoto dish={{ ...cover, photo: cover.photo }} className="aspect-[16/9] w-full rounded-xl">
+                <span className="absolute bottom-2 left-2 rounded-full bg-brand-950/75 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">{t(COURSES[cover.course])}</span>
+              </DishPhoto>
+            </div>
+          )}
           <ul className="flex-1 space-y-3 px-5 pb-4 pt-1">
             {menu.dishes.map((dish) => (
-              <li key={dish.id} className={cn(dish.course === "MAIN" && "rounded-xl bg-slate-50 px-3 py-2.5 -mx-3")}>
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">{t(COURSES[dish.course])}</p>
-                <p className={cn("mt-0.5 flex items-center gap-1.5 text-slate-800", dish.course === "MAIN" ? "font-display text-[15px] font-semibold" : "text-sm font-medium")}>
-                  {dish.name}
-                  {dish.vegetarian && <Leaf className="size-3.5 shrink-0 text-brand-600" aria-label={t("Végétarien")} />}
-                </p>
-                {dish.allergens.length > 0 && (
-                  <div className="mt-1.5 flex flex-wrap gap-1">
-                    {dish.allergens.map((a) => (
-                      <AllergenChip key={a} id={a} highlight={userAllergens.includes(a)} />
-                    ))}
-                  </div>
-                )}
+              <li key={dish.id} className={cn("flex items-start gap-3", dish.course === "MAIN" && "rounded-xl bg-slate-50 px-3 py-2.5 -mx-3")}>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">{t(COURSES[dish.course])}</p>
+                  <p className={cn("mt-0.5 flex items-center gap-1.5 text-slate-800", dish.course === "MAIN" ? "font-display text-[15px] font-semibold" : "text-sm font-medium")}>
+                    {dish.name}
+                    {dish.vegetarian && <Leaf className="size-3.5 shrink-0 text-brand-600" aria-label={t("Végétarien")} />}
+                  </p>
+                  {dish.allergens.length > 0 && (
+                    <div className="mt-1.5 flex flex-wrap gap-1">
+                      {dish.allergens.map((a) => (
+                        <AllergenChip key={a} id={a} highlight={userAllergens.includes(a)} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* Vignette des autres plats (la couverture montre déjà le sien) */}
+                {dish.photo && dish !== cover && <DishPhoto dish={{ ...dish, photo: dish.photo }} className="size-12 shrink-0 rounded-lg ring-1 ring-slate-900/[0.06]" />}
               </li>
             ))}
             <li className="flex items-center gap-2 pt-0.5">
