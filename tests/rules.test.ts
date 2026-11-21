@@ -3,6 +3,7 @@ import { prisma } from "@/server/db";
 import { passToken } from "@/server/pass";
 import { cancelReservation, reserveMeal } from "@/server/services/reservations";
 import { cashTopUp, lookupByPass, serveMeal } from "@/server/services/pos";
+import { looksLikePass, normalizeScan } from "@/lib/pass-scan";
 import { closeCashSession, openCashSession } from "@/server/services/cash";
 import { adjustBalance, approveUser, setSuspended, updateSettings } from "@/server/services/admin";
 import { saveMenu, setMenuPublished } from "@/server/services/menus";
@@ -152,6 +153,22 @@ describe("Caisse", () => {
     expect(await code(lookupByPass(c, passToken(u.id, 1).replace(u.id, (await makeUser()).id)))).toBe("INVALID_PASS");
     await prisma.user.update({ where: { id: u.id }, data: { passVersion: 2 } });
     expect(await code(lookupByPass(c, token))).toBe("REVOKED_PASS");
+  });
+
+  it("lit le pass d'une douchette QWERTY branchée sur un poste AZERTY, et le préfixe CANTINE:", async () => {
+    const u = await makeUser();
+    const c = await cashier();
+    const token = passToken(u.id, 1);
+    // Ce que tape une douchette QWERTY sur un poste AZERTY
+    const qwertyToAzerty: Record<string, string> = { "1": "&", "2": "é", "3": '"', "4": "'", "5": "(", "6": "-", "7": "è", "8": "_", "9": "ç", "0": "à", q: "a", a: "q", w: "z", z: "w", Q: "A", A: "Q", W: "Z", Z: "W", m: ",", M: "?", ".": ":", "-": ")", _: "°" };
+    const typed = [...token].map((ch) => qwertyToAzerty[ch] ?? ch).join("");
+    expect(typed.startsWith("CC&:")).toBe(true);
+    expect(looksLikePass(typed)).toBe(true);
+    expect(normalizeScan(typed)).toBe(token);
+    expect((await lookupByPass(c, typed)).user.id).toBe(u.id);
+    expect((await lookupByPass(c, `CANTINE:${token}`)).user.id).toBe(u.id);
+    expect(looksLikePass("Jean Dupont")).toBe(false);
+    expect(normalizeScan("Jean Dupont")).toBe("Jean Dupont");
   });
 });
 

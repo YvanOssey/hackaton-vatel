@@ -1,4 +1,5 @@
 import "server-only";
+import { normalizeScan } from "@/lib/pass-scan";
 import { z } from "zod";
 import { TOPUP_MAX, TOPUP_MIN } from "@/lib/constants";
 import { allergenConflicts, mealPrice } from "@/lib/rules";
@@ -53,7 +54,7 @@ export async function customerSnapshot(db: Tx, userId: string) {
 
 export async function lookupByPass(actor: Actor, scanned: string) {
   assertRole(actor, [...POS_ROLES]);
-  const parsed = verifyPassToken(scanned.replace(/^CANTINE:/i, ""));
+  const parsed = verifyPassToken(normalizeScan(scanned));
   if (!parsed) throw new AppError("QR Code invalide ou falsifié.", "INVALID_PASS");
   const user = await prisma.user.findUnique({ where: { id: parsed.userId }, select: { passVersion: true } });
   if (!user) throw new AppError("Ce pass ne correspond à aucun usager.", "NOT_FOUND");

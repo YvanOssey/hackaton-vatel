@@ -880,4 +880,16 @@ export const en: Record<string, string> = {
   "Photo trop lourde (1,5 Mo au plus) : choisissez une image plus petite.": "Photo too large (1.5 MB max): choose a smaller image.",
   "Format non pris en charge : utilisez une photo JPEG, PNG ou WebP.": "Unsupported format: use a JPEG, PNG or WebP photo.",
   "Aucune photo à retirer pour ce plat.": "There is no photo to remove for this dish.",
+  // Lecteur de pass par caméra (caisse)
+  "Scanner un pass": "Scan a pass",
+  "Image de la caméra": "Camera view",
+  "Ouverture de la caméra…": "Opening the camera…",
+  "Placez le QR Code du pass de l'étudiant dans le cadre.": "Place the student's pass QR code inside the frame.",
+  "Changer de caméra": "Switch camera",
+  "Scanner avec la caméra": "Scan with the camera",
+  "Ce QR Code n'est pas un pass CantineConnect.": "This QR code is not a CantineConnect pass.",
+  "Accès à la caméra refusé. Autorisez la caméra pour ce site dans le navigateur, puis réessayez.": "Camera access denied. Allow the camera for this site in your browser, then try again.",
+  "Aucune caméra détectée sur cet appareil. Utilisez la douchette ou la recherche par nom.": "No camera found on this device. Use the barcode scanner or search by name.",
+  "La caméra n'est disponible que sur une adresse sécurisée (https).": "The camera is only available on a secure address (https).",
+  "La caméra n'a pas pu démarrer. Fermez les autres applications qui l'utilisent, puis réessayez.": "The camera could not start. Close other apps using it, then try again.",
 };

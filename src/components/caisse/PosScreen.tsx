@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { Banknote, ClipboardList, Clock, Lock, ScanLine, Search, Utensils } from "lucide-react";
+import { Banknote, Camera, ClipboardList, Clock, Lock, ScanLine, Search, Utensils } from "lucide-react";
 import type { Course } from "@prisma/client";
 import type { CustomerSnapshot } from "@/server/services/pos";
 import { customerAction, scanAction, searchAction } from "@/app/caisse/actions";
@@ -10,6 +10,8 @@ import { useToast } from "@/components/toast";
 import { Avatar, Button, Card, CardHeader, EmptyState } from "@/components/ui";
 import { COURSES, METHODS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { looksLikePass } from "@/lib/pass-scan";
+import { CameraScanner } from "./CameraScanner";
 import { CustomerPanel } from "./CustomerPanel";
 import { CloseSessionModal } from "./CloseSessionModal";
 import { useI18n } from "@/i18n/client";
@@ -49,9 +51,7 @@ export function PosScreen({ state, timezone }: { state: PosState; timezone: stri
         <div className="min-w-[180px] flex-1">
           <div className="flex justify-between text-sm">
             <span className="text-slate-300">{t("Passages")}</span>
-            <span className="font-semibold tabular-nums">
-              {t("{served} / {reserved} réservés", { served: state.servedCount, reserved: state.reservedCount })}
-            </span>
+            <span className="font-semibold tabular-nums">{t("{served} / {reserved} réservés", { served: state.servedCount, reserved: state.reservedCount })}</span>
           </div>
           <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white/10">
             <div className="h-full w-full origin-left rounded-full bg-brand-400 transition-transform duration-500" style={{ transform: `scaleX(${pct / 100})` }} />
@@ -123,8 +123,6 @@ function LiveClock({ timezone }: { timezone: string }) {
   );
 }
 
-const looksLikePass = (v: string) => /^(CANTINE:)?CC1\./i.test(v.trim());
-
 function ScanBar({ onCustomer, ref }: { onCustomer: (c: CustomerSnapshot) => void; ref: React.Ref<HTMLInputElement> }) {
   const toast = useToast();
   const { t } = useI18n();
@@ -132,6 +130,7 @@ function ScanBar({ onCustomer, ref }: { onCustomer: (c: CustomerSnapshot) => voi
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [active, setActive] = useState(0);
   const [pending, start] = useTransition();
+  const [camera, setCamera] = useState(false);
 
   // Recherche par nom (désactivée pendant un scan de douchette)
   useEffect(() => {
@@ -172,56 +171,70 @@ function ScanBar({ onCustomer, ref }: { onCustomer: (c: CustomerSnapshot) => voi
   };
 
   return (
-    <div className="relative">
-      <ScanLine className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 text-brand-600" />
-      <input
-        ref={ref}
-        autoFocus
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            submit();
-          } else if (e.key === "ArrowDown") {
-            e.preventDefault();
-            setActive((a) => Math.min(a + 1, suggestions.length - 1));
-          } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            setActive((a) => Math.max(a - 1, 0));
-          } else if (e.key === "Escape") setQuery("");
-        }}
-        placeholder={t("Scanner un pass ou rechercher (nom, n° étudiant)…")}
-        aria-label={t("Scanner un pass ou rechercher un usager")}
-        autoComplete="off"
-        spellCheck={false}
-        className="h-16 w-full rounded-2xl border-0 bg-white pl-14 pr-28 text-lg shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
-      />
-      <Button className="absolute right-2.5 top-1/2 -translate-y-1/2" onClick={submit} disabled={pending}>
-        <Search className="size-4" /> OK
-      </Button>
-      {suggestions.length > 0 && (
-        <ul className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg" role="listbox">
-          {suggestions.map((u, i) => (
-            <li key={u.id} role="option" aria-selected={i === active}>
-              <button
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => open(() => customerAction(u.id))}
-                className={cn("flex w-full items-center gap-3 px-4 py-3 text-left", i === active ? "bg-brand-50" : "hover:bg-slate-50")}
-              >
-                <Avatar user={u} size="sm" />
-                <span className="flex-1">
-                  <span className="block font-medium text-slate-800">
-                    {u.firstName} {u.lastName}
+    <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="relative min-w-0 flex-1">
+        <ScanLine className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 text-brand-600" />
+        <input
+          ref={ref}
+          autoFocus
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            } else if (e.key === "ArrowDown") {
+              e.preventDefault();
+              setActive((a) => Math.min(a + 1, suggestions.length - 1));
+            } else if (e.key === "ArrowUp") {
+              e.preventDefault();
+              setActive((a) => Math.max(a - 1, 0));
+            } else if (e.key === "Escape") setQuery("");
+          }}
+          placeholder={t("Scanner un pass ou rechercher (nom, n° étudiant)…")}
+          aria-label={t("Scanner un pass ou rechercher un usager")}
+          autoComplete="off"
+          spellCheck={false}
+          className="h-16 w-full rounded-2xl border-0 bg-white pl-14 pr-28 text-lg shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
+        />
+        <Button className="absolute right-2.5 top-1/2 -translate-y-1/2" onClick={submit} disabled={pending}>
+          <Search className="size-4" /> OK
+        </Button>
+        {suggestions.length > 0 && (
+          <ul className="absolute inset-x-0 top-full z-20 mt-2 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg" role="listbox">
+            {suggestions.map((u, i) => (
+              <li key={u.id} role="option" aria-selected={i === active}>
+                <button
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => open(() => customerAction(u.id))}
+                  className={cn("flex w-full items-center gap-3 px-4 py-3 text-left", i === active ? "bg-brand-50" : "hover:bg-slate-50")}
+                >
+                  <Avatar user={u} size="sm" />
+                  <span className="flex-1">
+                    <span className="block font-medium text-slate-800">
+                      {u.firstName} {u.lastName}
+                    </span>
+                    {u.memberRef && <span className="block font-mono text-xs text-slate-500">{u.memberRef}</span>}
                   </span>
-                  {u.memberRef && <span className="block font-mono text-xs text-slate-500">{u.memberRef}</span>}
-                </span>
-                {u.status === "PENDING" && <span className="text-xs font-medium text-amber-700">{t("En attente")}</span>}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+                  {u.status === "PENDING" && <span className="text-xs font-medium text-amber-700">{t("En attente")}</span>}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      {/* Lecteur intégré : la caméra de l'appareil remplace la douchette */}
+      <Button variant="dark" className="h-16 shrink-0 rounded-2xl px-6 text-base" onClick={() => setCamera(true)} disabled={pending}>
+        <Camera className="size-5" /> {t("Scanner avec la caméra")}
+      </Button>
+      <CameraScanner
+        open={camera}
+        onClose={() => setCamera(false)}
+        onResult={(text) => {
+          setCamera(false);
+          open(() => scanAction(text));
+        }}
+      />
     </div>
   );
 }
@@ -230,7 +243,11 @@ function Journal({ state, timezone }: { state: PosState; timezone: string }) {
   const { t, money, time } = useI18n();
   return (
     <Card className="flex h-full flex-col self-start">
-      <CardHeader title={t("Journal de ma caisse")} subtitle={t("Ouverte à {time} · fond {float:money}", { time: time(state.session.openedAt, timezone), float: state.session.openingFloat })} icon={<ClipboardList className="size-4" />} />
+      <CardHeader
+        title={t("Journal de ma caisse")}
+        subtitle={t("Ouverte à {time} · fond {float:money}", { time: time(state.session.openedAt, timezone), float: state.session.openingFloat })}
+        icon={<ClipboardList className="size-4" />}
+      />
       <div className="grid grid-cols-2 gap-3 border-b border-slate-100 p-4">
         <div className="rounded-xl bg-slate-50 p-3">
           <p className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
