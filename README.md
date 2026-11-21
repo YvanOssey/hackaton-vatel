@@ -96,10 +96,27 @@ Prérequis : Node.js 20 ou plus, PostgreSQL 14 ou plus.
    npm install
    ```
 
-2. Créer le fichier de configuration, puis le remplir (`DATABASE_URL` et `DIRECT_URL` identiques en local). Le `AUTH_SECRET` se génère avec `openssl rand -base64 48`.
+2. Créer à la racine un fichier `.env` (ignoré par git) avec le contenu ci-dessous, puis le compléter. En local, `DATABASE_URL` et `DIRECT_URL` sont identiques ; avec Neon, voir [docs/migration-neon.md](docs/migration-neon.md). Le `AUTH_SECRET` (32 caractères minimum) se génère avec `openssl rand -base64 48`.
 
-   ```bash
-   cp .env.example .env
+   ```dotenv
+   # Base PostgreSQL
+   DATABASE_URL="postgresql://cantine:cantine@localhost:5432/cantine?schema=public"
+   DIRECT_URL="postgresql://cantine:cantine@localhost:5432/cantine?schema=public"
+
+   # Secret de signature des QR Codes (obligatoire en production)
+   AUTH_SECRET=""
+
+   # Fuseau horaire de l'établissement (heure limite, journée de service)
+   APP_TIMEZONE="Africa/Abidjan"
+
+   # Premier administrateur créé par `npm run db:seed` (mot de passe à changer à la 1re connexion)
+   ADMIN_EMAIL="admin@exemple.com"
+   ADMIN_PASSWORD=""
+
+   # Notifications push (facultatif) : npx web-push generate-vapid-keys
+   VAPID_PUBLIC_KEY=""
+   VAPID_PRIVATE_KEY=""
+   VAPID_SUBJECT="mailto:contact@exemple.com"
    ```
 
 3. Créer les tables :
