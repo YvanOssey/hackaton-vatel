@@ -4,10 +4,9 @@ out/
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store
-# Fichiers d'environnement (mots de passe de base, secrets) : seul l'exemple est versionné
+# Fichiers d'environnement (mots de passe de base, secrets)
 .env
 .env.*
-!.env.example
 *.zip
 *.bundle
 # Fichiers de l'assistant
