@@ -40,7 +40,7 @@ export default async function AccountsPage({ searchParams }: { searchParams: Pro
           <div className="flex flex-wrap items-center gap-3">
             <nav className="flex max-w-full overflow-x-auto rounded-xl bg-slate-100 p-1 [scrollbar-width:none]">
               {Object.entries(VIEWS).map(([key, v]) => (
-                <Link key={key} href={`/admin/comptes?vue=${key}`} className={cn("shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium", view === key ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900")}>
+                <Link key={key} href={`/admin/comptes?vue=${key}`} className={cn("inline-flex min-h-10 shrink-0 items-center whitespace-nowrap rounded-lg px-3 text-sm font-medium", view === key ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900")}>
                   {t(v.label)}
                 </Link>
               ))}

@@ -25,7 +25,7 @@ export default async function PasswordPage() {
           <span className="flex-1" />
           <LangSwitch />
           {!user.mustChangePassword && (
-            <Link href={ROLES[user.role].home} className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
+            <Link href={ROLES[user.role].home} className="hit inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-900">
               <ArrowLeft className="size-4" /> {t("Retour")}
             </Link>
           )}

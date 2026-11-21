@@ -41,7 +41,7 @@ export function StaffForm() {
           >
             <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1">
               {(["CASHIER", "CHEF", "ADMIN"] as Role[]).map((r) => (
-                <button key={r} type="button" onClick={() => setRole(r)} aria-pressed={role === r} className={cn("rounded-lg py-1.5 text-xs font-medium", role === r ? "bg-white text-slate-900 shadow-sm" : "text-slate-600")}>
+                <button key={r} type="button" onClick={() => setRole(r)} aria-pressed={role === r} className={cn("hit min-h-9 rounded-lg py-1.5 text-xs font-medium", role === r ? "bg-white text-slate-900 shadow-sm" : "text-slate-600")}>
                   {t(ROLES[r].label).split(" ")[0]}
                 </button>
               ))}

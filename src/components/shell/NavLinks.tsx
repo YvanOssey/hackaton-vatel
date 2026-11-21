@@ -66,7 +66,7 @@ export function AreaSwitch({ items }: { items: NavItem[] }) {
             aria-current={active === i.href ? "page" : undefined}
             title={t(i.label)}
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition sm:px-3",
+              "hit flex min-h-8 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition sm:px-3",
               active === i.href ? "bg-white text-slate-900 shadow-sm ring-1 ring-slate-900/5" : "text-slate-500 hover:text-slate-900",
             )}
           >

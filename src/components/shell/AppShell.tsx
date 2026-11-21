@@ -45,7 +45,10 @@ export async function AppShell({ user, nav, children, wide }: { user: Actor & { 
           </Link>
           {areas.length > 0 && <AreaSwitch items={areas} />}
           <div className="ml-auto flex items-center gap-1 sm:gap-2">
-            <LangSwitch className="hidden sm:inline-flex" />
+            {/* Sous 640 px, la langue se choisit dans le menu du compte : l'en-tête garde la place pour l'avatar */}
+            <div className="hidden sm:block">
+              <LangSwitch />
+            </div>
             <NotificationBell items={items} unread={box.unread} />
             <UserMenu user={user} roleLabel={ROLES[user.role].label} pushKey={pushPublicKey()} />
           </div>

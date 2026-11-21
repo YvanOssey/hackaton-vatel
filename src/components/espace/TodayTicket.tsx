@@ -125,7 +125,7 @@ export function TodayTicket({
                 <button
                   disabled={pending}
                   onClick={() => start(async () => void show(await cancelAction(reservation.id), "Réservation annulée"))}
-                  className="text-xs font-medium text-brand-100/70 underline-offset-4 hover:text-white hover:underline disabled:opacity-50"
+                  className="hit min-h-8 text-xs font-medium text-brand-100/70 underline-offset-4 hover:text-white hover:underline disabled:opacity-50"
                 >
                   {isToday && left > 0 ? t("Annuler (encore {left})", { left: fmtLeft(left) }) : t("Annuler")}
                 </button>

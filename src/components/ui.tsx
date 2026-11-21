@@ -204,7 +204,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
           <h2 id={titleId} className="text-base font-semibold text-slate-900">
             {title}
           </h2>
-          <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-brand-600" aria-label={t("Fermer")}>
+          <button type="button" onClick={onClose} className="hit rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-brand-600" aria-label={t("Fermer")}>
             <X className="size-5" />
           </button>
         </div>

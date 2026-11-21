@@ -123,7 +123,7 @@ export function MenuEditor({ initialDate, today, dates, menus, counts }: { initi
                 <div className="mt-3">
                   <AllergenPicker value={dishes[c].allergens} onChange={(v) => update(c, { allergens: v })} disabled={past} />
                 </div>
-                <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm text-slate-600">
+                <label className="mt-2 inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm text-slate-600">
                   <input type="checkbox" checked={dishes[c].vegetarian} onChange={(e) => update(c, { vegetarian: e.target.checked })} className="size-4 rounded accent-brand-600" />
                   <Leaf className="size-4 text-brand-600" /> {t("Végétarien")}
                 </label>
