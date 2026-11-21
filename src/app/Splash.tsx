@@ -59,19 +59,19 @@ export function Splash({ target, dateLabel, establishment }: { target: string; d
   return (
     <main
       onClick={() => go()}
-      className="relative flex min-h-dvh cursor-pointer select-none flex-col items-center justify-center overflow-hidden bg-emerald-950 text-white"
+      className="relative flex min-h-dvh cursor-pointer select-none flex-col items-center justify-center overflow-hidden bg-brand-950 text-white"
       aria-label={t("Ouverture de CantineConnect — touchez pour continuer")}
     >
       {/* Fond : grille fine et halo */}
       <div className="bg-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_70%)]" aria-hidden />
-      <div className="pointer-events-none absolute left-1/2 top-1/2 size-[42rem] -translate-x-1/2 -translate-y-[60%] rounded-full bg-emerald-500/15 blur-3xl" aria-hidden />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 size-[42rem] -translate-x-1/2 -translate-y-[60%] rounded-full bg-brand-500/15 blur-3xl" aria-hidden />
 
       <div className={cn("relative flex flex-col items-center transition-[transform,opacity] duration-500 ease-[var(--ease-out-expo)]", leaving && "-translate-y-6 scale-[0.97] opacity-0")}>
         {/* Logo + ondes */}
         <div className="relative">
-          <span className="absolute inset-0 rounded-[28%] bg-emerald-400/40 [animation:ping-soft_1.6s_var(--ease-out-expo)_380ms_2]" aria-hidden />
+          <span className="absolute inset-0 rounded-[28%] bg-brand-400/40 [animation:ping-soft_1.6s_var(--ease-out-expo)_380ms_2]" aria-hidden />
           <div className="[animation:pop_700ms_var(--ease-spring)_both]">
-            <LogoMark animated className="size-20 drop-shadow-[0_18px_40px_rgba(16,185,129,0.45)] sm:size-24" />
+            <LogoMark animated className="size-20 drop-shadow-[0_18px_40px_rgba(47,139,198,0.45)] sm:size-24" />
           </div>
         </div>
 
@@ -83,20 +83,20 @@ export function Splash({ target, dateLabel, establishment }: { target: string; d
             </span>
           ))}
           {WORD2.map((l, i) => (
-            <span key={`b${i}`} className="anim-rise text-emerald-300" style={v({ "--d": `${835 + i * 45}ms` })} aria-hidden>
+            <span key={`b${i}`} className="anim-rise text-brand-300" style={v({ "--d": `${835 + i * 45}ms` })} aria-hidden>
               {l}
             </span>
           ))}
         </h1>
-        <p className="anim-fade mt-3 text-sm text-emerald-100/70 sm:text-base" style={v({ "--d": "1100ms" })}>
+        <p className="anim-fade mt-3 text-sm text-brand-100/70 sm:text-base" style={v({ "--d": "1100ms" })}>
           {establishment}
         </p>
 
         {/* Ticket du jour qui sort de « l'imprimante » */}
         <div className="mt-9 w-72 sm:w-80">
-          <div className="h-1.5 rounded-full bg-emerald-900 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]" aria-hidden />
+          <div className="h-1.5 rounded-full bg-brand-900 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]" aria-hidden />
           <div className="-mt-0.5 overflow-hidden px-3 pb-6">
-            <div className="ticket rounded-b-2xl bg-white text-slate-900 shadow-[0_24px_50px_-12px_rgba(0,0,0,0.55)] [--cut:58%] [--notch:var(--color-emerald-950)] [animation:print_900ms_var(--ease-out-expo)_1150ms_both]">
+            <div className="ticket rounded-b-2xl bg-white text-slate-900 shadow-[0_24px_50px_-12px_rgba(0,0,0,0.55)] [--cut:58%] [--notch:var(--color-brand-950)] [animation:print_900ms_var(--ease-out-expo)_1150ms_both]">
               <div className="px-5 pb-3 pt-4">
                 <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">
                   <span>{t("Ticket du jour")}</span>
@@ -114,7 +114,7 @@ export function Splash({ target, dateLabel, establishment }: { target: string; d
                   <span>{t("Savourez")}</span>
                 </div>
                 <div className="mt-3 h-1 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full origin-left rounded-full bg-emerald-500 [animation:grow_1300ms_cubic-bezier(0.65,0,0.35,1)_1250ms_both]" />
+                  <div className="h-full origin-left rounded-full bg-brand-500 [animation:grow_1300ms_cubic-bezier(0.65,0,0.35,1)_1250ms_both]" />
                 </div>
               </div>
             </div>
@@ -122,7 +122,7 @@ export function Splash({ target, dateLabel, establishment }: { target: string; d
         </div>
       </div>
 
-      <p className={cn("anim-fade absolute bottom-6 text-xs text-emerald-100/40 transition-opacity", leaving && "opacity-0")} style={v({ "--d": "1600ms" })}>
+      <p className={cn("anim-fade absolute bottom-6 text-xs text-brand-100/40 transition-opacity", leaving && "opacity-0")} style={v({ "--d": "1600ms" })}>
         {t("Touchez pour continuer")}
       </p>
 

@@ -32,7 +32,7 @@ export default async function PassPage() {
         )}
         <div className="space-y-4">
           <Card className="anim-rise flex items-center gap-3 p-4" style={{ "--d": "80ms" } as React.CSSProperties}>
-            <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+            <span className="flex size-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
               <Wallet className="size-5" />
             </span>
             <div>
@@ -48,10 +48,10 @@ export default async function PassPage() {
           </Card>
           <ol className="anim-rise space-y-3 px-1 text-sm text-slate-600" style={{ "--d": "200ms" } as React.CSSProperties}>
             <li className="flex gap-3">
-              <ScanLine className="mt-0.5 size-4 shrink-0 text-emerald-600" /> {t("Le caissier scanne votre code : votre repas réservé est débité.")}
+              <ScanLine className="mt-0.5 size-4 shrink-0 text-brand-600" /> {t("Le caissier scanne votre code : votre repas réservé est débité.")}
             </li>
             <li className="flex gap-3">
-              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" /> {t("Code signé et personnel : tout code modifié est refusé. En cas de doute, générez-en un nouveau.")}
+              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand-600" /> {t("Code signé et personnel : tout code modifié est refusé. En cas de doute, générez-en un nouveau.")}
             </li>
           </ol>
         </div>

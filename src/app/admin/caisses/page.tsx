@@ -47,7 +47,7 @@ export default async function CashSessionsPage() {
                     <td className="px-4 py-3">{money(s.totals.cashIn)}</td>
                     <td className="px-4 py-3">{money(s.expectedCash ?? s.totals.expectedCash)}</td>
                     <td className="px-4 py-3">{s.countedCash === null ? "—" : money(s.countedCash)}</td>
-                    <td className={cn("px-4 py-3 font-semibold", s.difference ? "text-red-600" : "text-emerald-700")}>{s.difference === null ? "—" : money(s.difference)}</td>
+                    <td className={cn("px-4 py-3 font-semibold", s.difference ? "text-red-600" : "text-brand-700")}>{s.difference === null ? "—" : money(s.difference)}</td>
                     <td className="max-w-[220px] truncate px-4 py-3 text-slate-500" title={s.closingNote ?? undefined}>{s.closingNote ?? ""}</td>
                   </tr>
                 ))}

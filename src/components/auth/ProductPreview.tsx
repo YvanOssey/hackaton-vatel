@@ -12,11 +12,11 @@ export function ProductPreview() {
       {/* Ticket du jour */}
       <div className="anim-rise absolute left-0 top-10 w-[16rem]" style={delay(350)}>
         <div className="anim-float" style={delay(0)}>
-          <div className="ticket rounded-2xl bg-white text-slate-900 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] [--cut:62%] [--notch:var(--color-emerald-950)]">
+          <div className="ticket rounded-2xl bg-white text-slate-900 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] [--cut:62%] [--notch:var(--color-brand-950)]">
             <div className="px-5 pb-4 pt-4">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700">{t("Aujourd'hui")}</span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-600/15">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-700">{t("Aujourd'hui")}</span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-semibold text-brand-700 ring-1 ring-brand-600/15">
                   <Check className="size-3" strokeWidth={3} /> {t("Réservé")}
                 </span>
               </div>
@@ -38,7 +38,7 @@ export function ProductPreview() {
 
       {/* Solde */}
       <div className="anim-rise absolute -right-2 top-0 w-44" style={delay(520)}>
-        <div className="anim-float rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 p-4 text-emerald-950 shadow-[0_24px_40px_-16px_rgba(16,185,129,0.6)]" style={{ ...delay(900), "--r": "3deg" } as React.CSSProperties}>
+        <div className="anim-float rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 p-4 text-brand-950 shadow-[0_24px_40px_-16px_rgba(47,139,198,0.6)]" style={{ ...delay(900), "--r": "3deg" } as React.CSSProperties}>
           <div className="flex items-center justify-between">
             <span className="flex size-7 items-center justify-center rounded-lg bg-white/30">
               <Wallet className="size-4" />
@@ -69,7 +69,7 @@ export function ProductPreview() {
 
       {/* Note */}
       <div className="anim-rise absolute bottom-0 left-8" style={delay(860)}>
-        <div className="anim-float flex items-center gap-2 rounded-full bg-emerald-900/80 px-3.5 py-2 text-xs font-medium text-emerald-50 ring-1 ring-white/10 backdrop-blur" style={delay(2600)}>
+        <div className="anim-float flex items-center gap-2 rounded-full bg-brand-900/80 px-3.5 py-2 text-xs font-medium text-brand-50 ring-1 ring-white/10 backdrop-blur" style={delay(2600)}>
           <span className="flex">
             {[0, 1, 2, 3, 4].map((i) => (
               <Star key={i} className="size-3.5 fill-amber-300 text-amber-300" />

@@ -110,8 +110,8 @@ function Switch({ on, disabled, onClick, label }: { on: boolean; disabled?: bool
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:opacity-50",
-        on ? "bg-emerald-600" : "bg-slate-300",
+        "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:opacity-50",
+        on ? "bg-brand-600" : "bg-slate-300",
       )}
     >
       <span className={cn("inline-block size-5 rounded-full bg-white shadow transition-transform duration-200 ease-[var(--ease-spring)]", on ? "translate-x-[22px]" : "translate-x-0.5")} />
@@ -152,9 +152,9 @@ export function PushCard({ publicKey, audience }: { publicKey: string | null; au
   return (
     <div className="overflow-hidden rounded-2xl bg-white ring-1 ring-slate-900/[0.06] shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-18px_rgba(15,23,42,0.12)]">
       <div className="flex items-start gap-4 p-5">
-        <span className={cn("relative flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors", on ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-500")}>
+        <span className={cn("relative flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors", on ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-500")}>
           {on ? <BellRing className="size-5" /> : <BellOff className="size-5" />}
-          {on && <span className="anim-ping-soft absolute inset-0 rounded-xl bg-emerald-500/40" aria-hidden />}
+          {on && <span className="anim-ping-soft absolute inset-0 rounded-xl bg-brand-500/40" aria-hidden />}
         </span>
         <div className="min-w-0 flex-1">
           <p className="font-display font-semibold text-slate-900">{t("Notifications sur cet appareil")}</p>
@@ -169,8 +169,8 @@ export function PushCard({ publicKey, audience }: { publicKey: string | null; au
       </div>
 
       {state === "on" && (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 bg-emerald-50/50 px-5 py-3">
-          <span className="text-sm font-medium text-emerald-800">{t("Activées sur cet appareil")}</span>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 bg-brand-50/50 px-5 py-3">
+          <span className="text-sm font-medium text-brand-800">{t("Activées sur cet appareil")}</span>
           <Button size="sm" variant="secondary" disabled={testing} onClick={() => startTest(async () => void show(await testPushAction(), "Test envoyé"))}>
             {testing ? <LoaderCircle className="size-4 animate-spin" /> : <Send className="size-4" />} {t("Envoyer un test")}
           </Button>

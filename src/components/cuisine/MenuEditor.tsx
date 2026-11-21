@@ -102,7 +102,7 @@ export function MenuEditor({ initialDate, today, dates, menus, counts }: { initi
                 >
                   <span className="block font-semibold">{formatDay(d, { weekday: "short" })}</span>
                   <span className="block">{formatDay(d, { day: "numeric", month: "short" })}</span>
-                  {m && <span className={cn("absolute right-1.5 top-1.5 size-1.5 rounded-full", m.status === "PUBLISHED" ? "bg-emerald-500" : "bg-amber-400")} />}
+                  {m && <span className={cn("absolute right-1.5 top-1.5 size-1.5 rounded-full", m.status === "PUBLISHED" ? "bg-brand-500" : "bg-amber-400")} />}
                 </button>
               );
             })}
@@ -124,8 +124,8 @@ export function MenuEditor({ initialDate, today, dates, menus, counts }: { initi
                   <AllergenPicker value={dishes[c].allergens} onChange={(v) => update(c, { allergens: v })} disabled={past} />
                 </div>
                 <label className="mt-3 inline-flex cursor-pointer items-center gap-2 text-sm text-slate-600">
-                  <input type="checkbox" checked={dishes[c].vegetarian} onChange={(e) => update(c, { vegetarian: e.target.checked })} className="size-4 rounded accent-emerald-600" />
-                  <Leaf className="size-4 text-emerald-600" /> {t("Végétarien")}
+                  <input type="checkbox" checked={dishes[c].vegetarian} onChange={(e) => update(c, { vegetarian: e.target.checked })} className="size-4 rounded accent-brand-600" />
+                  <Leaf className="size-4 text-brand-600" /> {t("Végétarien")}
                 </label>
               </div>
             ))}
@@ -164,7 +164,7 @@ export function MenuEditor({ initialDate, today, dates, menus, counts }: { initi
             return (
               <li key={d} className={cn("px-5 py-3", d === date && "bg-slate-50")}>
                 <div className="flex items-center justify-between gap-2">
-                  <button onClick={() => setDate(d)} className="hit text-left text-sm font-semibold text-slate-900 hover:text-emerald-700">
+                  <button onClick={() => setDate(d)} className="hit text-left text-sm font-semibold text-slate-900 hover:text-brand-700">
                     {formatDay(d, { weekday: "long", day: "numeric", month: "short" })}
                   </button>
                   {m ? <Badge tone={m.status === "PUBLISHED" ? "success" : "warning"}>{m.status === "PUBLISHED" ? t("Publié") : t("Brouillon")}</Badge> : <Badge>{locked ? t("Aucun") : t("À créer")}</Badge>}
@@ -184,7 +184,7 @@ export function MenuEditor({ initialDate, today, dates, menus, counts }: { initi
                             <EyeOff className="size-4" />
                           </button>
                         ) : (
-                          <button disabled={pending} onClick={() => start(async () => void show(await setPublishedAction(m.id, true), "Menu publié"))} className="flex size-11 items-center justify-center rounded-lg text-emerald-700 hover:bg-emerald-50" title={t("Publier")} aria-label={t("Publier")}>
+                          <button disabled={pending} onClick={() => start(async () => void show(await setPublishedAction(m.id, true), "Menu publié"))} className="flex size-11 items-center justify-center rounded-lg text-brand-700 hover:bg-brand-50" title={t("Publier")} aria-label={t("Publier")}>
                             <Eye className="size-4" />
                           </button>
                         )}

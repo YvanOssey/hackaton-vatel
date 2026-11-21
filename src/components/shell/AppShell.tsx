@@ -33,13 +33,13 @@ export async function AppShell({ user, nav, children, wide }: { user: Actor & { 
     <div className={cn("min-h-dvh", mobileFirst && "pb-20 md:pb-0")}>
       <a
         href="#contenu"
-        className="fixed left-3 top-3 z-[70] -translate-y-20 rounded-xl bg-emerald-950 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400"
+        className="fixed left-3 top-3 z-[70] -translate-y-20 rounded-xl bg-brand-950 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400"
       >
         {t("Aller au contenu")}
       </a>
       <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/85 backdrop-blur-lg">
         <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6">
-          <Link href={ROLES[user.role].home} className="hit flex shrink-0 items-center gap-2.5 rounded-xl focus-visible:outline-2 focus-visible:outline-emerald-600" aria-label={t("Accueil")}>
+          <Link href={ROLES[user.role].home} className="hit flex shrink-0 items-center gap-2.5 rounded-xl focus-visible:outline-2 focus-visible:outline-brand-600" aria-label={t("Accueil")}>
             <LogoMark className="size-9" />
             <Wordmark className="hidden text-[17px] md:block" />
           </Link>

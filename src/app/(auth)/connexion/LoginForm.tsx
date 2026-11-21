@@ -81,7 +81,7 @@ export function LoginForm() {
       <div className="anim-rise space-y-3 text-center text-sm" style={delay(320)}>
         <p className="text-slate-600">
           {t("Pas encore de compte ?")}{" "}
-          <Link href="/inscription" className="font-semibold text-emerald-700 underline-offset-4 hover:underline">
+          <Link href="/inscription" className="font-semibold text-brand-700 underline-offset-4 hover:underline">
             {t("Créer un compte")}
           </Link>
         </p>

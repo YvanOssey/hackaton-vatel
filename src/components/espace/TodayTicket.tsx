@@ -66,13 +66,13 @@ export function TodayTicket({
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
       {/* Ticket */}
-      <div className="anim-rise relative rounded-3xl bg-emerald-950 text-white shadow-[0_24px_60px_-28px_rgba(2,44,34,0.8)] sm:flex" style={{ "--d": "60ms" } as React.CSSProperties}>
+      <div className="anim-rise relative rounded-3xl bg-brand-950 text-white shadow-[0_24px_60px_-28px_rgba(29,29,27,0.8)] sm:flex" style={{ "--d": "60ms" } as React.CSSProperties}>
         <div className="bg-grid relative flex-1 overflow-hidden rounded-t-3xl px-6 pb-6 pt-5 sm:rounded-l-3xl sm:rounded-tr-none sm:px-7">
-          <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-emerald-500/20 blur-3xl" />
+          <div className="pointer-events-none absolute -right-16 -top-20 size-64 rounded-full bg-brand-500/20 blur-3xl" />
           <div className="relative flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">{focus ? (isToday ? t("Aujourd'hui") : fmtDay(focus.date, { weekday: "long", day: "numeric", month: "long" })) : t("Cette semaine")}</span>
+            <span className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-300">{focus ? (isToday ? t("Aujourd'hui") : fmtDay(focus.date, { weekday: "long", day: "numeric", month: "long" })) : t("Cette semaine")}</span>
             {reservation?.status === "RESERVED" && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-400/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-200 ring-1 ring-emerald-300/30">
+              <span className="inline-flex items-center gap-1 rounded-full bg-brand-400/15 px-2 py-0.5 text-[11px] font-semibold text-brand-200 ring-1 ring-brand-300/30">
                 <Check className="size-3" strokeWidth={3} /> {t("Réservé")}
               </span>
             )}
@@ -86,9 +86,9 @@ export function TodayTicket({
             <>
               <h2 className="relative mt-3 font-display text-[1.7rem] font-bold leading-tight tracking-tight sm:text-3xl">
                 {main.name}
-                {main.vegetarian && <Leaf className="ml-2 inline size-5 -translate-y-0.5 text-emerald-300" aria-label={t("Végétarien")} />}
+                {main.vegetarian && <Leaf className="ml-2 inline size-5 -translate-y-0.5 text-brand-300" aria-label={t("Végétarien")} />}
               </h2>
-              <p className="relative mt-1.5 text-sm text-emerald-50/70">{sides.map((s) => s.name).join(" · ")}</p>
+              <p className="relative mt-1.5 text-sm text-brand-50/70">{sides.map((s) => s.name).join(" · ")}</p>
               {conflicts.length > 0 && (
                 <p className="relative mt-3 inline-flex items-center gap-2 rounded-lg bg-red-500/15 px-2.5 py-1.5 text-sm font-medium text-red-200 ring-1 ring-red-400/30">
                   <TriangleAlert className="size-4" /> {t("Contient {list}", { list: conflicts.map((a) => t(allergenLabel(a))).join(", ") })}
@@ -98,13 +98,13 @@ export function TodayTicket({
           ) : (
             <>
               <h2 className="relative mt-3 font-display text-2xl font-bold tracking-tight">{t("Pas de menu publié pour l'instant")}</h2>
-              <p className="relative mt-1.5 text-sm text-emerald-50/70">{t("La cuisine publie les menus de la semaine à l'avance. Revenez bientôt.")}</p>
+              <p className="relative mt-1.5 text-sm text-brand-50/70">{t("La cuisine publie les menus de la semaine à l'avance. Revenez bientôt.")}</p>
             </>
           )}
         </div>
 
         {/* Talon détachable */}
-        <div className="relative flex flex-col justify-center gap-3 rounded-b-3xl bg-emerald-900/60 px-6 py-5 sm:w-64 sm:rounded-r-3xl sm:rounded-bl-none sm:px-6">
+        <div className="relative flex flex-col justify-center gap-3 rounded-b-3xl bg-brand-900/60 px-6 py-5 sm:w-64 sm:rounded-r-3xl sm:rounded-bl-none sm:px-6">
           <span className="ticket-cut-light absolute inset-x-5 top-0 sm:inset-x-auto sm:inset-y-5 sm:left-0 sm:top-5 sm:border-l-2 sm:border-t-0 sm:border-dashed sm:border-white/25" aria-hidden />
           {/* Encoches de découpe */}
           <span className="absolute -left-[11px] -top-[11px] size-[22px] rounded-full bg-[var(--page)] sm:hidden" aria-hidden />
@@ -118,31 +118,31 @@ export function TodayTicket({
           ) : menu && reservation?.status === "RESERVED" ? (
             <>
               <p className="font-display text-2xl font-bold tabular-nums">{money(reservation.price)}</p>
-              <Link href="/espace/pass" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-sm font-semibold text-emerald-950 transition hover:bg-emerald-50 active:scale-[0.96]">
+              <Link href="/espace/pass" className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-white text-sm font-semibold text-brand-950 transition hover:bg-brand-50 active:scale-[0.96]">
                 <QrCode className="size-4" /> {t("Afficher mon pass")}
               </Link>
               {focus!.booking.open ? (
                 <button
                   disabled={pending}
                   onClick={() => start(async () => void show(await cancelAction(reservation.id), "Réservation annulée"))}
-                  className="text-xs font-medium text-emerald-100/70 underline-offset-4 hover:text-white hover:underline disabled:opacity-50"
+                  className="text-xs font-medium text-brand-100/70 underline-offset-4 hover:text-white hover:underline disabled:opacity-50"
                 >
                   {isToday && left > 0 ? t("Annuler (encore {left})", { left: fmtLeft(left) }) : t("Annuler")}
                 </button>
               ) : (
-                <p className="text-xs text-emerald-100/60">{t("Annulation close")}</p>
+                <p className="text-xs text-brand-100/60">{t("Annulation close")}</p>
               )}
             </>
           ) : menu ? (
             <>
               <p className="font-display text-2xl font-bold tabular-nums">{money(price)}</p>
               {isToday && left > 0 && (
-                <p className={cn("flex items-center gap-1.5 text-xs font-medium", left <= 30 ? "text-amber-300" : "text-emerald-100/70")}>
+                <p className={cn("flex items-center gap-1.5 text-xs font-medium", left <= 30 ? "text-amber-300" : "text-brand-100/70")}>
                   <Clock className="size-3.5" /> {t("Encore {left} pour réserver", { left: fmtLeft(left) })}
                 </p>
               )}
               <Button
-                className="h-11 w-full bg-emerald-400 text-emerald-950 shadow-none hover:bg-emerald-300 active:bg-emerald-300"
+                className="h-11 w-full bg-brand-400 text-brand-950 shadow-none hover:bg-brand-300 active:bg-brand-300"
                 disabled={!focus!.booking.open || !canBook || pending}
                 title={!canBook ? t("Compte en attente de validation") : !focus!.booking.open ? t(focus!.booking.reason, params(focus!.booking)) : undefined}
                 onClick={() => start(async () => void show(await reserveAction(focus!.date), "Repas réservé"))}
@@ -151,7 +151,7 @@ export function TodayTicket({
               </Button>
             </>
           ) : (
-            <p className="text-sm text-emerald-100/70">{t("Les réservations ouvrent dès la publication du menu.")}</p>
+            <p className="text-sm text-brand-100/70">{t("Les réservations ouvrent dès la publication du menu.")}</p>
           )}
         </div>
       </div>
@@ -159,14 +159,14 @@ export function TodayTicket({
       {/* Portefeuille */}
       <Link
         href="/espace/portefeuille"
-        className="anim-rise group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-18px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/[0.06] transition hover:ring-emerald-500/40"
+        className="anim-rise group relative flex flex-col justify-between overflow-hidden rounded-3xl bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-18px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/[0.06] transition hover:ring-brand-500/40"
         style={{ "--d": "140ms" } as React.CSSProperties}
       >
         <div className="flex items-center justify-between">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/10">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-brand-50 text-brand-700 ring-1 ring-brand-600/10">
             <Wallet className="size-5" />
           </span>
-          <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700">
             {t("Recharger")} <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
           </span>
         </div>

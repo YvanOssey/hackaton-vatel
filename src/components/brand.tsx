@@ -12,15 +12,15 @@ export function LogoMark({ className, animated, tone = "brand" }: { className?: 
       : undefined;
   return (
     <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden>
-      <path d={TICKET_PATH} className={tone === "light" ? "fill-white" : "fill-emerald-500"} />
+      <path d={TICKET_PATH} className={tone === "light" ? "fill-white" : "fill-brand-300"} />
       <path d={TICKET_PATH} className={tone === "light" ? "fill-transparent" : "fill-[url(#lm-shine)]"} />
       <defs>
         <linearGradient id="lm-shine" x1="4" y1="4" x2="44" y2="44">
-          <stop stopColor="#6ee7b7" stopOpacity="0.55" />
-          <stop offset="0.6" stopColor="#10b981" stopOpacity="0" />
+          <stop stopColor="#ffffff" stopOpacity="0.45" />
+          <stop offset="0.6" stopColor="#86c3ea" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <g stroke={tone === "light" ? "#047857" : "white"} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+      <g stroke="#1d1d1b" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
         <path d="M17 13v8.5a3 3 0 0 0 6 0V13M20 13v22" style={stroke(48, 250)} />
         <path d="M31.5 35V13c-3.2 2.2-4.6 5.6-4.6 10.2h4.6" style={stroke(48, 480)} />
       </g>
@@ -31,7 +31,7 @@ export function LogoMark({ className, animated, tone = "brand" }: { className?: 
 export function Wordmark({ className, light }: { className?: string; light?: boolean }) {
   return (
     <span translate="no" className={cn("font-display font-bold tracking-tight", light ? "text-white" : "text-slate-900", className)}>
-      Cantine<span className={light ? "text-emerald-300" : "text-emerald-600"}>Connect</span>
+      Cantine<span className={light ? "text-brand-300" : "text-brand-600"}>Connect</span>
     </span>
   );
 }

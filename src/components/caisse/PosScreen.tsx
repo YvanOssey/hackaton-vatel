@@ -52,7 +52,7 @@ export function PosScreen({ state, timezone }: { state: PosState; timezone: stri
             </span>
           </div>
           <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-white/10">
-            <div className="h-full w-full origin-left rounded-full bg-emerald-400 transition-transform duration-500" style={{ transform: `scaleX(${pct / 100})` }} />
+            <div className="h-full w-full origin-left rounded-full bg-brand-400 transition-transform duration-500" style={{ transform: `scaleX(${pct / 100})` }} />
           </div>
         </div>
         <Button variant="secondary" size="sm" className="ring-0" onClick={() => setClosing(true)}>
@@ -168,7 +168,7 @@ function ScanBar({ onCustomer, ref }: { onCustomer: (c: CustomerSnapshot) => voi
 
   return (
     <div className="relative">
-      <ScanLine className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 text-emerald-600" />
+      <ScanLine className="pointer-events-none absolute left-4 top-1/2 size-6 -translate-y-1/2 text-brand-600" />
       <input
         ref={ref}
         autoFocus
@@ -190,7 +190,7 @@ function ScanBar({ onCustomer, ref }: { onCustomer: (c: CustomerSnapshot) => voi
         aria-label={t("Scanner un pass ou rechercher un usager")}
         autoComplete="off"
         spellCheck={false}
-        className="h-16 w-full rounded-2xl border-0 bg-white pl-14 pr-28 text-lg shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+        className="h-16 w-full rounded-2xl border-0 bg-white pl-14 pr-28 text-lg shadow-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-brand-500 focus:outline-none"
       />
       <Button className="absolute right-2.5 top-1/2 -translate-y-1/2" onClick={submit} disabled={pending}>
         <Search className="size-4" /> OK
@@ -202,7 +202,7 @@ function ScanBar({ onCustomer, ref }: { onCustomer: (c: CustomerSnapshot) => voi
               <button
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => open(() => customerAction(u.id))}
-                className={cn("flex w-full items-center gap-3 px-4 py-3 text-left", i === active ? "bg-emerald-50" : "hover:bg-slate-50")}
+                className={cn("flex w-full items-center gap-3 px-4 py-3 text-left", i === active ? "bg-brand-50" : "hover:bg-slate-50")}
               >
                 <Avatar user={u} size="sm" />
                 <span className="flex-1">
@@ -258,7 +258,7 @@ function Journal({ state, timezone }: { state: PosState; timezone: string }) {
                 </p>
                 <p className="truncate text-xs text-slate-500">{tx.type === "MEAL" ? t(tx.label) : `${t("Rechargement")} · ${t(METHODS[tx.method as keyof typeof METHODS])}`}</p>
               </div>
-              <span className={cn("text-sm font-semibold tabular-nums", tx.amount > 0 ? "text-emerald-600" : "text-slate-900")}>
+              <span className={cn("text-sm font-semibold tabular-nums", tx.amount > 0 ? "text-brand-600" : "text-slate-900")}>
                 {tx.amount > 0 ? "+" : ""}
                 {money(tx.amount)}
               </span>

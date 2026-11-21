@@ -23,9 +23,9 @@ export default async function LinkChildPage() {
         <ol className="space-y-3">
           {STEPS.map((s, i) => (
             <li key={s.title} className="anim-rise flex gap-4 rounded-2xl bg-white p-4 ring-1 ring-slate-900/[0.06]" style={{ "--d": `${i * 70}ms` } as React.CSSProperties}>
-              <span className="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
+              <span className="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
                 <s.icon className="size-5" />
-                <span className="absolute -left-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-emerald-950 text-[11px] font-bold text-white">{i + 1}</span>
+                <span className="absolute -left-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-brand-950 text-[11px] font-bold text-white">{i + 1}</span>
               </span>
               <div>
                 <p className="font-display font-semibold text-slate-900">{t(s.title)}</p>

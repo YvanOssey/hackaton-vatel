@@ -59,7 +59,7 @@ export default async function AdminHome() {
             action={
               <div className="hidden gap-3 text-xs text-slate-500 sm:flex">
                 <span className="flex items-center gap-1.5">
-                  <span className="size-2.5 rounded-sm bg-emerald-500" /> {t("Réservés")}
+                  <span className="size-2.5 rounded-sm bg-brand-500" /> {t("Réservés")}
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="size-2.5 rounded-sm bg-amber-400" /> {t("Sans réservation")}
@@ -81,11 +81,11 @@ export default async function AdminHome() {
                       ) : (
                         <>
                           <div className="bg-amber-400" style={{ height: `${(x.walkIn / total) * 100}%` }} />
-                          <div className={cn("flex-1", isToday ? "bg-emerald-600" : "bg-emerald-500")} />
+                          <div className={cn("flex-1", isToday ? "bg-brand-600" : "bg-brand-500")} />
                         </>
                       )}
                     </div>
-                    <span className={cn("text-[10px] font-medium", isToday ? "text-emerald-700" : "text-slate-500")}>{day(x.date, { weekday: "narrow", day: "numeric" })}</span>
+                    <span className={cn("text-[10px] font-medium", isToday ? "text-brand-700" : "text-slate-500")}>{day(x.date, { weekday: "narrow", day: "numeric" })}</span>
                   </div>
                 );
               })}
@@ -131,8 +131,8 @@ export default async function AdminHome() {
                 <li key={s.id} className="flex items-center justify-between px-5 py-3 text-sm">
                   <span className="flex items-center gap-2 font-medium text-slate-800">
                     <span className="relative flex size-2">
-                      <span className="anim-ping-soft absolute inset-0 rounded-full bg-emerald-500" />
-                      <span className="relative size-2 rounded-full bg-emerald-500" />
+                      <span className="anim-ping-soft absolute inset-0 rounded-full bg-brand-500" />
+                      <span className="relative size-2 rounded-full bg-brand-500" />
                     </span>
                     {s.cashier.firstName} {s.cashier.lastName}
                   </span>

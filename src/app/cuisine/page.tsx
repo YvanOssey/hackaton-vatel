@@ -30,7 +30,7 @@ export default async function KitchenPage() {
   return (
     <>
       <PageTitle eyebrow={t("Cuisine")} title={t("Production du {day}", { day: dayInline(k.today) })}>
-        <Link href="/cuisine/menus" className="inline-flex h-11 items-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700">
+        <Link href="/cuisine/menus" className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
           {t("Planifier les menus")} <ArrowRight className="size-4" />
         </Link>
       </PageTitle>
@@ -63,19 +63,19 @@ export default async function KitchenPage() {
                 const past = d.date < k.today;
                 return (
                   <div key={d.date} className="group flex h-full flex-1 flex-col items-center justify-end gap-1.5" title={t("{day} : {total} réservés, {served} servis, prévision {forecast}", { day: day(d.date), total: d.total, served: d.served, forecast: d.forecast })}>
-                    <span className={cn("text-xs font-semibold tabular-nums", isToday ? "text-emerald-700" : "text-slate-600")}>{past ? d.total : d.forecast}</span>
+                    <span className={cn("text-xs font-semibold tabular-nums", isToday ? "text-brand-700" : "text-slate-600")}>{past ? d.total : d.forecast}</span>
                     <div className="relative flex w-full max-w-10 flex-1 items-end">
                       {!past && d.forecast > d.total && (
-                        <div className="absolute inset-x-0 bottom-0 rounded-t-md border border-dashed border-emerald-400 bg-emerald-50" style={{ height: `${(d.forecast / max) * 100}%` }} />
+                        <div className="absolute inset-x-0 bottom-0 rounded-t-md border border-dashed border-brand-400 bg-brand-50" style={{ height: `${(d.forecast / max) * 100}%` }} />
                       )}
                       <div
-                        className={cn("relative w-full overflow-hidden rounded-t-md transition-[height] duration-700", isToday ? "bg-emerald-300" : past ? "bg-slate-300" : "bg-emerald-200")}
+                        className={cn("relative w-full overflow-hidden rounded-t-md transition-[height] duration-700", isToday ? "bg-brand-300" : past ? "bg-slate-300" : "bg-brand-200")}
                         style={{ height: `${(d.total / max) * 100}%`, minHeight: 3 }}
                       >
-                        <div className={cn("absolute inset-x-0 bottom-0", isToday ? "bg-emerald-600" : "bg-slate-500")} style={{ height: `${d.total ? (d.served / d.total) * 100 : 0}%` }} />
+                        <div className={cn("absolute inset-x-0 bottom-0", isToday ? "bg-brand-600" : "bg-slate-500")} style={{ height: `${d.total ? (d.served / d.total) * 100 : 0}%` }} />
                       </div>
                     </div>
-                    <span className={cn("text-[11px] font-medium", isToday ? "text-emerald-700" : "text-slate-500")}>{day(d.date, { weekday: "short", day: "numeric" })}</span>
+                    <span className={cn("text-[11px] font-medium", isToday ? "text-brand-700" : "text-slate-500")}>{day(d.date, { weekday: "short", day: "numeric" })}</span>
                   </div>
                 );
               })}
@@ -83,13 +83,13 @@ export default async function KitchenPage() {
           </div>
           <div className="flex flex-wrap gap-4 border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
             <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-sm bg-emerald-200" /> {t("Réservés")}
+              <span className="size-2.5 rounded-sm bg-brand-200" /> {t("Réservés")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-sm bg-emerald-600" /> {t("Servis")}
+              <span className="size-2.5 rounded-sm bg-brand-600" /> {t("Servis")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-sm border border-dashed border-emerald-400 bg-emerald-50" /> {t("Prévision anti-gaspillage")}
+              <span className="size-2.5 rounded-sm border border-dashed border-brand-400 bg-brand-50" /> {t("Prévision anti-gaspillage")}
             </span>
           </div>
         </Card>
@@ -128,7 +128,7 @@ export default async function KitchenPage() {
             action={
               k.orders.length > 0 ? (
                 <div className="hidden h-2 w-32 overflow-hidden rounded-full bg-slate-100 sm:block" title={t("{served}/{total} servis", { served, total: k.orders.length })}>
-                  <div className="h-full rounded-full bg-emerald-500" style={{ width: `${(served / k.orders.length) * 100}%` }} />
+                  <div className="h-full rounded-full bg-brand-500" style={{ width: `${(served / k.orders.length) * 100}%` }} />
                 </div>
               ) : undefined
             }
@@ -155,7 +155,7 @@ export default async function KitchenPage() {
                     </div>
                     {o.walkIn && <Badge tone="warning">{t("Sans résa")}</Badge>}
                     {o.status === "SERVED" ? (
-                      <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                      <span className="flex items-center gap-1 text-xs font-semibold text-brand-700">
                         <CheckCircle2 className="size-4" /> {o.servedAt ? time(o.servedAt, env.timezone) : t("Servi")}
                       </span>
                     ) : (
@@ -197,7 +197,7 @@ export default async function KitchenPage() {
                     {ratings.best.map((m) => (
                       <li key={m.date} className="flex items-center justify-between gap-2 text-sm">
                         <span className="truncate font-medium text-slate-700">
-                          <Leaf className="mr-1 inline size-3 text-emerald-500" />
+                          <Leaf className="mr-1 inline size-3 text-brand-500" />
                           {m.main}
                         </span>
                         <span className="shrink-0 tabular-nums text-slate-500">{dec(m.average)} · {m.count}</span>

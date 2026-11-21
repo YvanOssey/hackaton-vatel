@@ -7,7 +7,7 @@ import { clock } from "@/server/time";
 import { Splash } from "./Splash";
 
 /** Barre du navigateur mobile assortie à l'en-tête vert profond */
-export const viewport: Viewport = { themeColor: "#022c22" };
+export const viewport: Viewport = { themeColor: "#1d1d1b" };
 
 export const dynamic = "force-dynamic";
 

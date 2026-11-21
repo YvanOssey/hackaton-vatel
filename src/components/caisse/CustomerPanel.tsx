@@ -109,7 +109,7 @@ export function CustomerPanel({ customer, onUpdate, onClear }: { customer: Custo
                   })}
                 </p>
                 <Button size="md" variant={ack ? "secondary" : "dark"} className="mt-3" onClick={() => setAck((v) => !v)} aria-pressed={ack} disabled={isServed}>
-                  {ack ? <><CircleCheck className="size-4 text-emerald-600" /> {t("Plateau adapté vérifié")}</> : t("J'ai vérifié · plateau adapté remis")}
+                  {ack ? <><CircleCheck className="size-4 text-brand-600" /> {t("Plateau adapté vérifié")}</> : t("J'ai vérifié · plateau adapté remis")}
                 </Button>
               </div>
             </div>
@@ -120,7 +120,7 @@ export function CustomerPanel({ customer, onUpdate, onClear }: { customer: Custo
             <span className="text-slate-500">{t("— absentes du menu du jour")}</span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+          <div className="flex items-center gap-2 rounded-xl bg-brand-50 px-3 py-2 text-sm text-brand-700">
             <CircleCheck className="size-4" /> {t("Aucune allergie déclarée")}
           </div>
         )}
@@ -136,7 +136,7 @@ export function CustomerPanel({ customer, onUpdate, onClear }: { customer: Custo
 
         <div className="rounded-2xl border border-slate-200 p-4">
           <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700">
-            <Banknote className="size-4 text-emerald-600" /> {t("Rechargement en espèces")}
+            <Banknote className="size-4 text-brand-600" /> {t("Rechargement en espèces")}
           </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {CASH_TOPUP_PRESETS.map((a) => (
@@ -161,11 +161,11 @@ export function CustomerPanel({ customer, onUpdate, onClear }: { customer: Custo
         </div>
 
         {served && isServed && (
-          <div className="flex items-center gap-3 rounded-2xl bg-emerald-600 p-4 text-white animate-[pop_250ms_ease-out]">
+          <div className="flex items-center gap-3 rounded-2xl bg-brand-600 p-4 text-white animate-[pop_250ms_ease-out]">
             <CircleCheck className="size-8 shrink-0" />
             <div>
               <p className="text-lg font-semibold">{t("Repas validé · −{amount:money}", { amount: served.price })}</p>
-              <p className="text-sm text-emerald-50">{t("Nouveau solde : {balance:money}", { balance: served.balance })}</p>
+              <p className="text-sm text-brand-50">{t("Nouveau solde : {balance:money}", { balance: served.balance })}</p>
             </div>
           </div>
         )}

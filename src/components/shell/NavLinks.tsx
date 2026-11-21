@@ -98,10 +98,10 @@ export function SectionTabs({ items }: { items: NavItem[] }) {
               on ? "text-slate-900" : "text-slate-500 hover:text-slate-900",
             )}
           >
-            {Icon && <Icon className={cn("size-4", on ? "text-emerald-600" : "text-slate-400")} />}
+            {Icon && <Icon className={cn("size-4", on ? "text-brand-600" : "text-slate-400")} />}
             {t(i.label)}
             {!!i.badge && <span className="rounded-full bg-amber-500 px-1.5 text-[11px] font-semibold leading-[18px] text-white">{i.badge}</span>}
-            <span className={cn("absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-emerald-600 transition-transform duration-300", on ? "scale-x-100" : "scale-x-0")} />
+            <span className={cn("absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-brand-600 transition-transform duration-300", on ? "scale-x-100" : "scale-x-0")} />
           </Link>
         );
       })}
@@ -124,7 +124,7 @@ export function BottomTabs({ items }: { items: NavItem[] }) {
           const on = active === i.href;
           return (
             <Link key={i.href} href={i.href} aria-current={on ? "page" : undefined} className="group flex flex-col items-center gap-1 pb-2 pt-2.5">
-              <span className={cn("flex h-7 w-12 items-center justify-center rounded-full transition-colors duration-200", on ? "bg-emerald-100 text-emerald-700" : "text-slate-400 group-active:bg-slate-100")}>
+              <span className={cn("flex h-7 w-12 items-center justify-center rounded-full transition-colors duration-200", on ? "bg-brand-100 text-brand-700" : "text-slate-400 group-active:bg-slate-100")}>
                 <Icon className="size-[19px]" strokeWidth={on ? 2.4 : 2} />
               </span>
               <span className={cn("text-[11px] font-medium", on ? "text-slate-900" : "text-slate-500")}>{t(i.short ?? i.label)}</span>

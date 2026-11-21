@@ -46,10 +46,10 @@ export function LangSwitch({ tone = "light", className }: { tone?: "light" | "da
             "hit min-w-11 rounded-full px-2.5 py-1 uppercase transition-colors",
             l === locale
               ? tone === "dark"
-                ? "bg-white text-emerald-950"
+                ? "bg-white text-brand-950"
                 : "bg-white text-slate-900 shadow-sm"
               : tone === "dark"
-                ? "text-emerald-100/70 hover:text-white"
+                ? "text-brand-100/70 hover:text-white"
                 : "text-slate-500 hover:text-slate-900",
           )}
         >

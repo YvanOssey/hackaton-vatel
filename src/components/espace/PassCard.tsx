@@ -15,15 +15,15 @@ export function PassCard({ token, user, memberRef }: { token: string; user: { id
   const [pending, start] = useTransition();
   const show = useResultToast();
   return (
-    <div className="anim-rise mx-auto w-full max-w-sm drop-shadow-[0_24px_40px_rgba(2,44,34,0.18)]">
+    <div className="anim-rise mx-auto w-full max-w-sm drop-shadow-[0_24px_40px_rgba(29,29,27,0.18)]">
       <div className="ticket rounded-3xl bg-white [--cut:calc(100%-5.5rem)]">
-        <div className="bg-grid relative overflow-hidden rounded-t-3xl bg-emerald-950 px-6 pb-6 pt-5 text-white">
-          <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-emerald-500/25 blur-2xl" />
+        <div className="bg-grid relative overflow-hidden rounded-t-3xl bg-brand-950 px-6 pb-6 pt-5 text-white">
+          <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-brand-500/25 blur-2xl" />
           <div className="relative flex items-center justify-between">
             <span className="flex items-center gap-2 text-sm font-semibold">
               <LogoMark className="size-7" /> {t("Pass cantine")}
             </span>
-            <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-200 ring-1 ring-emerald-300/30">{t("Étudiant")}</span>
+            <span className="rounded-full bg-brand-400/15 px-2 py-0.5 text-[11px] font-semibold text-brand-200 ring-1 ring-brand-300/30">{t("Étudiant")}</span>
           </div>
           <div className="relative mt-5 flex items-center gap-3">
             <Avatar user={user} size="lg" />
@@ -31,7 +31,7 @@ export function PassCard({ token, user, memberRef }: { token: string; user: { id
               <p className="truncate font-display text-xl font-bold">
                 {user.firstName} {user.lastName}
               </p>
-              {memberRef && <p translate="no" className="font-mono text-xs text-emerald-100/60">{t("N° {ref}", { ref: memberRef })}</p>}
+              {memberRef && <p translate="no" className="font-mono text-xs text-brand-100/60">{t("N° {ref}", { ref: memberRef })}</p>}
             </div>
           </div>
         </div>

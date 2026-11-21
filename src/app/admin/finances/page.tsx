@@ -77,7 +77,7 @@ export default async function FinancesPage({ searchParams }: { searchParams: Pro
                     <td className="px-4 py-2.5">{t(TX_TYPES[r.type])}{r.note && <span className="block text-xs text-slate-500">{note(r.note)}</span>}</td>
                     <td className="px-4 py-2.5 text-slate-600">{t(METHODS[r.method])}</td>
                     <td className="px-4 py-2.5 text-slate-600">{r.operator ? `${r.operator.firstName} ${r.operator.lastName}` : "—"}</td>
-                    <td className={cn("px-4 py-2.5 font-semibold", r.amount > 0 ? "text-emerald-600" : "text-slate-900")}>{r.amount > 0 ? "+" : ""}{money(r.amount)}</td>
+                    <td className={cn("px-4 py-2.5 font-semibold", r.amount > 0 ? "text-brand-600" : "text-slate-900")}>{r.amount > 0 ? "+" : ""}{money(r.amount)}</td>
                     <td className="px-4 py-2.5 text-slate-600">{money(r.balanceAfter)}</td>
                   </tr>
                 ))}

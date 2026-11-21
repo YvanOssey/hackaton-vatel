@@ -61,7 +61,7 @@ export function CloseSessionModal({ open, onClose, state }: { open: boolean; onC
           />
         </Field>
         {diff !== null && (
-          <p className={cn("rounded-xl px-3 py-2 text-sm font-medium", diff === 0 ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700")}>
+          <p className={cn("rounded-xl px-3 py-2 text-sm font-medium", diff === 0 ? "bg-brand-50 text-brand-700" : "bg-red-50 text-red-700")}>
             {diff === 0 ? t("Caisse juste") : t("Écart : {sign}{diff:money}", { sign: diff > 0 ? "+" : "", diff })}
           </p>
         )}

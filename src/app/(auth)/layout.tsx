@@ -8,7 +8,7 @@ import { getI18n } from "@/i18n/server";
 import { delay } from "@/lib/utils";
 
 /** Barre du navigateur mobile assortie à l'en-tête vert profond */
-export const viewport: Viewport = { themeColor: "#022c22" };
+export const viewport: Viewport = { themeColor: "#1d1d1b" };
 
 const FEATURES = [
   { icon: ShieldCheck, title: "Allergies vérifiées", text: "Alerte bloquante en caisse" },
@@ -21,9 +21,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
   return (
     <div className="min-h-dvh bg-[var(--page)] lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:p-3">
       {/* Panneau de marque */}
-      <aside className="relative hidden overflow-hidden rounded-[1.75rem] bg-emerald-950 text-white lg:flex lg:flex-col">
+      <aside className="relative hidden overflow-hidden rounded-[1.75rem] bg-brand-950 text-white lg:flex lg:flex-col">
         <div className="bg-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_60%_45%,black_20%,transparent_75%)]" aria-hidden />
-        <div className="pointer-events-none absolute -right-24 top-1/3 size-[30rem] rounded-full bg-emerald-500/20 blur-3xl" aria-hidden />
+        <div className="pointer-events-none absolute -right-24 top-1/3 size-[30rem] rounded-full bg-brand-500/20 blur-3xl" aria-hidden />
         <div className="relative flex flex-1 flex-col px-12 py-10 xl:px-16">
           <Brand light size="md" />
           <div className="mt-14 max-w-lg">
@@ -31,9 +31,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
             <p className="anim-rise font-display text-[2.6rem] font-bold leading-[1.05] tracking-tight xl:text-5xl" style={delay(100)}>
               {t("Le déjeuner,")}
               <br />
-              <span className="text-emerald-300">{t("sans la file d'attente.")}</span>
+              <span className="text-brand-300">{t("sans la file d'attente.")}</span>
             </p>
-            <p className="anim-rise mt-4 max-w-md text-[15px] leading-relaxed text-emerald-50/70" style={delay(200)}>
+            <p className="anim-rise mt-4 max-w-md text-[15px] leading-relaxed text-brand-50/70" style={delay(200)}>
               {t("Menus de la semaine, réservation en un geste, portefeuille rechargeable et pass QR : le restaurant universitaire tient dans votre poche.")}
             </p>
           </div>
@@ -43,9 +43,9 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           <ul className="grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
             {FEATURES.map((f, i) => (
               <li key={f.title} className="anim-rise" style={delay(900 + i * 80)}>
-                <f.icon className="size-5 text-emerald-300" />
+                <f.icon className="size-5 text-brand-300" />
                 <p className="mt-2 text-sm font-semibold">{t(f.title)}</p>
-                <p className="text-xs text-emerald-50/60">{t(f.text)}</p>
+                <p className="text-xs text-brand-50/60">{t(f.text)}</p>
               </li>
             ))}
           </ul>
@@ -55,12 +55,12 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       {/* Formulaire */}
       <a
         href="#formulaire"
-        className="fixed left-3 top-3 z-[70] -translate-y-20 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-emerald-950 shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-2 focus-visible:outline-emerald-500"
+        className="fixed left-3 top-3 z-[70] -translate-y-20 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-brand-950 shadow-lg transition-transform focus-visible:translate-y-0 focus-visible:outline-2 focus-visible:outline-brand-500"
       >
         {t("Aller au formulaire")}
       </a>
       <main className="flex min-h-dvh flex-col lg:min-h-0">
-        <header className="relative overflow-hidden bg-emerald-950 px-5 pb-10 pt-6 text-white lg:hidden">
+        <header className="relative overflow-hidden bg-brand-950 px-5 pb-10 pt-6 text-white lg:hidden">
           <div className="bg-grid pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent)]" aria-hidden />
           <div className="relative">
             <div className="flex items-center justify-between gap-3">
@@ -68,7 +68,7 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
               <LangSwitch tone="dark" />
             </div>
             <p className="mt-6 font-display text-[1.65rem] font-bold leading-tight tracking-tight">
-              {t("Le déjeuner,")} <span className="text-emerald-300">{t("sans la file d'attente.")}</span>
+              {t("Le déjeuner,")} <span className="text-brand-300">{t("sans la file d'attente.")}</span>
             </p>
           </div>
           <div className="ticket-edge absolute inset-x-0 -bottom-px text-[var(--page)]" aria-hidden />

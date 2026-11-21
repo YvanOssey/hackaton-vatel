@@ -30,10 +30,10 @@ export function FamilyLinks({ parents, activeCodeExpiresAt }: { parents: Parent[
     <div className="divide-y divide-slate-100">
       <div className="p-5">
         {code ? (
-          <div className="rounded-2xl bg-emerald-950 p-5 text-center text-white [animation:pop_260ms_ease-out]">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">{t("Code à transmettre")}</p>
+          <div className="rounded-2xl bg-brand-950 p-5 text-center text-white [animation:pop_260ms_ease-out]">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-300">{t("Code à transmettre")}</p>
             <p translate="no" className="mt-2 select-all font-mono text-3xl font-bold tracking-[0.2em]">{code.code}</p>
-            <p className="mt-2 text-xs text-emerald-100/60">{t("Usage unique · expire le {date}", { date: dateTime(code.expiresAt) })}</p>
+            <p className="mt-2 text-xs text-brand-100/60">{t("Usage unique · expire le {date}", { date: dateTime(code.expiresAt) })}</p>
             <div className="mt-4 flex justify-center gap-2">
               <button
                 onClick={async () => {
@@ -45,7 +45,7 @@ export function FamilyLinks({ parents, activeCodeExpiresAt }: { parents: Parent[
                     toast({ tone: "info", title: t("Copie impossible"), description: t("Sélectionnez le code pour le copier.") });
                   }
                 }}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-white px-3 text-sm font-semibold text-emerald-950 hover:bg-emerald-50"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-white px-3 text-sm font-semibold text-brand-950 hover:bg-brand-50"
               >
                 {copied ? <Check className="size-4" /> : <Copy className="size-4" />} {copied ? t("Copié") : t("Copier")}
               </button>
@@ -56,7 +56,7 @@ export function FamilyLinks({ parents, activeCodeExpiresAt }: { parents: Parent[
                     if (show(await revokeLinkCodeAction(), "Code annulé")) setCode(null);
                   })
                 }
-                className="inline-flex h-9 items-center rounded-lg px-3 text-sm font-medium text-emerald-100/80 ring-1 ring-white/20 hover:bg-white/10"
+                className="inline-flex h-9 items-center rounded-lg px-3 text-sm font-medium text-brand-100/80 ring-1 ring-white/20 hover:bg-white/10"
               >
                 {t("Annuler le code")}
               </button>
@@ -114,7 +114,7 @@ export function FamilyLinks({ parents, activeCodeExpiresAt }: { parents: Parent[
         </ul>
       )}
       <p className="flex items-center gap-2 px-5 py-3 text-xs text-slate-500">
-        <ShieldCheck className="size-3.5 text-emerald-600" /> {t("Vous pouvez retirer un parent à tout moment.")}
+        <ShieldCheck className="size-3.5 text-brand-600" /> {t("Vous pouvez retirer un parent à tout moment.")}
       </p>
     </div>
   );

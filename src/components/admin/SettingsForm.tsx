@@ -61,7 +61,7 @@ export function SettingsForm({ initial }: { initial: S }) {
             <input id="low" inputMode="numeric" value={String(s.lowBalanceThreshold)} onChange={num("lowBalanceThreshold")} className={inputCls} />
           </Field>
           <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-slate-50 p-3 text-sm">
-            <input type="checkbox" checked={s.allowWalkIn} onChange={(e) => setS({ ...s, allowWalkIn: e.target.checked })} className="mt-0.5 size-4 accent-emerald-600" />
+            <input type="checkbox" checked={s.allowWalkIn} onChange={(e) => setS({ ...s, allowWalkIn: e.target.checked })} className="mt-0.5 size-4 accent-brand-600" />
             <span>
               <span className="font-medium text-slate-800">{t("Autoriser les repas sans réservation")}</span>
               <span className="block text-slate-500">{t("Servis au tarif normal, signalés en orange en caisse.")}</span>

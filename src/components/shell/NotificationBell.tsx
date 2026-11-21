@@ -35,13 +35,13 @@ export type InboxItem = {
 };
 
 const KIND: Record<string, { icon: LucideIcon; tone: string }> = {
-  account: { icon: UserCheck, tone: "bg-emerald-100 text-emerald-700" },
+  account: { icon: UserCheck, tone: "bg-brand-100 text-brand-700" },
   low_balance: { icon: TriangleAlert, tone: "bg-amber-100 text-amber-700" },
   meal_served: { icon: Utensils, tone: "bg-sky-100 text-sky-700" },
-  topup: { icon: Wallet, tone: "bg-emerald-100 text-emerald-700" },
+  topup: { icon: Wallet, tone: "bg-brand-100 text-brand-700" },
   family: { icon: HeartHandshake, tone: "bg-violet-100 text-violet-700" },
   payment_failed: { icon: XCircle, tone: "bg-red-100 text-red-700" },
-  test: { icon: BellRing, tone: "bg-emerald-100 text-emerald-700" },
+  test: { icon: BellRing, tone: "bg-brand-100 text-brand-700" },
 };
 
 function ago(iso: string, locale: string, now: string) {
@@ -147,7 +147,7 @@ export function NotificationBell({
             {state.unread > 0 && (
               <button
                 onClick={readAll}
-                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-50"
+                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-50"
               >
                 <CheckCheck className="size-3.5" /> {t("Tout marquer comme lu")}
               </button>
@@ -173,7 +173,7 @@ export function NotificationBell({
                 const k = KIND[n.kind] ?? KIND.account;
                 const cls = cn(
                   "flex w-full gap-3 px-4 py-3 text-left transition-colors hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none",
-                  !n.read && "bg-emerald-50/40",
+                  !n.read && "bg-brand-50/40",
                 );
                 const content = (
                   <>
@@ -199,7 +199,7 @@ export function NotificationBell({
                         </span>
                         {!n.read && (
                           <span
-                            className="mt-1.5 size-2 shrink-0 rounded-full bg-emerald-500"
+                            className="mt-1.5 size-2 shrink-0 rounded-full bg-brand-500"
                             aria-label={t("non lue")}
                           />
                         )}

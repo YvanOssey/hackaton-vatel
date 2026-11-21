@@ -99,15 +99,15 @@ function DayCard({ day, today, price, userAllergens, canBook }: { day: Day } & P
     );
 
   return (
-    <Card className={cn("flex h-full flex-col overflow-hidden transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_-20px_rgba(15,23,42,0.2)]", isToday && "ring-2 ring-emerald-500/70", past && !reservation && "opacity-70")}>
+    <Card className={cn("flex h-full flex-col overflow-hidden transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_-20px_rgba(15,23,42,0.2)]", isToday && "ring-2 ring-brand-500/70", past && !reservation && "opacity-70")}>
       <div className="flex items-center gap-3 px-5 pb-3 pt-4">
-        <div className={cn("flex size-12 shrink-0 flex-col items-center justify-center rounded-xl leading-none", isToday ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-700")}>
+        <div className={cn("flex size-12 shrink-0 flex-col items-center justify-center rounded-xl leading-none", isToday ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-700")}>
           <span className="font-display text-lg font-bold">{d.getUTCDate()}</span>
-          <span className={cn("text-[10px] font-semibold uppercase", isToday ? "text-emerald-100" : "text-slate-500")}>{month}</span>
+          <span className={cn("text-[10px] font-semibold uppercase", isToday ? "text-brand-100" : "text-slate-500")}>{month}</span>
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-display font-semibold capitalize text-slate-900">{weekday}</p>
-          <p className={cn("text-xs", isToday ? "font-semibold text-emerald-700" : "text-slate-500")}>{isToday ? t("Aujourd'hui") : past ? t("Passé") : menu ? money(reservation?.price ?? price) : "—"}</p>
+          <p className={cn("text-xs", isToday ? "font-semibold text-brand-700" : "text-slate-500")}>{isToday ? t("Aujourd'hui") : past ? t("Passé") : menu ? money(reservation?.price ?? price) : "—"}</p>
         </div>
         {status}
       </div>
@@ -120,7 +120,7 @@ function DayCard({ day, today, price, userAllergens, canBook }: { day: Day } & P
                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">{t(COURSES[dish.course])}</p>
                 <p className={cn("mt-0.5 flex items-center gap-1.5 text-slate-800", dish.course === "MAIN" ? "font-display text-[15px] font-semibold" : "text-sm font-medium")}>
                   {dish.name}
-                  {dish.vegetarian && <Leaf className="size-3.5 shrink-0 text-emerald-600" aria-label={t("Végétarien")} />}
+                  {dish.vegetarian && <Leaf className="size-3.5 shrink-0 text-brand-600" aria-label={t("Végétarien")} />}
                 </p>
                 {dish.allergens.length > 0 && (
                   <div className="mt-1.5 flex flex-wrap gap-1">
@@ -203,7 +203,7 @@ export function RateMeal({ reservationId, rating, compact }: { reservationId: st
         <span className="flex items-center gap-2 text-sm text-slate-600">
           <Stars value={rating.score} size="sm" /> {t(RATING_LABELS[rating.score])}
         </span>
-        <button onClick={() => setEditing(true)} className="hit text-xs font-semibold text-emerald-700 hover:underline">
+        <button onClick={() => setEditing(true)} className="hit text-xs font-semibold text-brand-700 hover:underline">
           {t("Modifier")}
         </button>
       </div>
@@ -228,7 +228,7 @@ export function RateMeal({ reservationId, rating, compact }: { reservationId: st
               onChange={(e) => setComment(e.target.value)}
               maxLength={280}
               placeholder={t("Un mot pour la cuisine…")}
-              className="h-9 w-full rounded-lg bg-white pl-9 pr-3 text-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="h-9 w-full rounded-lg bg-white pl-9 pr-3 text-sm ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </label>
           <Button size="sm" className="h-9" disabled={pending} onClick={() => save(score)}>

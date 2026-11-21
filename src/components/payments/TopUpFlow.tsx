@@ -82,8 +82,8 @@ export function TopUpFlow({ beneficiaryId, onDone }: { beneficiaryId: string; on
     return (
       <div className="flex flex-col items-center py-4 text-center">
         <svg viewBox="0 0 52 52" className="size-16" aria-hidden>
-          <circle cx="26" cy="26" r="24" className="fill-emerald-50 stroke-emerald-500" strokeWidth="2" />
-          <path d="M15 27l7 7 15-16" fill="none" className="stroke-emerald-600" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="24" style={{ animation: "check 500ms var(--ease-out-expo) 150ms both" }} />
+          <circle cx="26" cy="26" r="24" className="fill-brand-50 stroke-brand-500" strokeWidth="2" />
+          <path d="M15 27l7 7 15-16" fill="none" className="stroke-brand-600" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="24" style={{ animation: "check 500ms var(--ease-out-expo) 150ms both" }} />
         </svg>
         <p className="mt-4 font-display text-xl font-bold text-slate-900">+{money(stage.amount)}</p>
         <p className="mt-1 text-sm text-slate-500">{stage.balance !== null ? t("Nouveau solde : {balance:money}", { balance: stage.balance }) : t("Portefeuille crédité.")}</p>
@@ -172,7 +172,7 @@ export function TopUpFlow({ beneficiaryId, onDone }: { beneficiaryId: string; on
               type="button"
               aria-pressed={provider === id}
               onClick={() => setProvider(id)}
-              className={cn("flex items-center gap-3 rounded-xl bg-white p-3 text-left ring-1 ring-inset transition", provider === id ? "ring-2 ring-emerald-500 shadow-[0_0_0_4px_rgba(16,185,129,0.12)]" : "ring-slate-200 hover:ring-slate-300")}
+              className={cn("flex items-center gap-3 rounded-xl bg-white p-3 text-left ring-1 ring-inset transition", provider === id ? "ring-2 ring-brand-500 shadow-[0_0_0_4px_rgba(47,139,198,0.12)]" : "ring-slate-200 hover:ring-slate-300")}
             >
               <ProviderLogo provider={id} className="size-9" />
               <span className="text-sm font-semibold text-slate-800">{MOBILE_PROVIDERS[id].label}</span>
@@ -193,13 +193,13 @@ export function TopUpFlow({ beneficiaryId, onDone }: { beneficiaryId: string; on
                 setAmount(v);
                 setCustom("");
               }}
-              className={cn("h-11 rounded-xl text-sm font-semibold tabular-nums ring-1 ring-inset transition", !custom && amount === v ? "bg-emerald-600 text-white ring-emerald-600" : "bg-white text-slate-700 ring-slate-200 hover:ring-slate-300")}
+              className={cn("h-11 rounded-xl text-sm font-semibold tabular-nums ring-1 ring-inset transition", !custom && amount === v ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-slate-700 ring-slate-200 hover:ring-slate-300")}
             >
               {money(v).replace(" FCFA", "")}
             </button>
           ))}
         </div>
-        <label className="mt-2 flex h-11 items-center rounded-xl bg-white ring-1 ring-inset ring-slate-200 focus-within:ring-2 focus-within:ring-emerald-500">
+        <label className="mt-2 flex h-11 items-center rounded-xl bg-white ring-1 ring-inset ring-slate-200 focus-within:ring-2 focus-within:ring-brand-500">
           <span className="sr-only">{t("Autre montant")}</span>
           <input
             id="topup-amount"
@@ -219,7 +219,7 @@ export function TopUpFlow({ beneficiaryId, onDone }: { beneficiaryId: string; on
 
       <label className="block">
         <span className="mb-2 block text-sm font-medium text-slate-700">{t("Numéro {provider}", { provider: MOBILE_PROVIDERS[provider].label })}</span>
-        <span className="flex h-11 items-center rounded-xl bg-white ring-1 ring-inset ring-slate-200 focus-within:ring-2 focus-within:ring-emerald-500">
+        <span className="flex h-11 items-center rounded-xl bg-white ring-1 ring-inset ring-slate-200 focus-within:ring-2 focus-within:ring-brand-500">
           <Phone className="ml-3.5 size-4 text-slate-400" />
           <input
             id="topup-phone"

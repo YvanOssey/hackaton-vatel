@@ -19,7 +19,7 @@ export function CardHeader({ title, subtitle, action, icon }: { title: React.Rea
   return (
     <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
       <div className="flex min-w-0 items-start gap-3">
-        {icon && <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/10">{icon}</div>}
+        {icon && <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700 ring-1 ring-brand-600/10">{icon}</div>}
         <div className="min-w-0">
           <h2 className="font-display text-base font-semibold tracking-tight text-slate-900">{title}</h2>
           {subtitle && <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>}
@@ -37,7 +37,7 @@ const BADGE_TONES: Record<BadgeTone, string> = {
   warning: "bg-amber-50 text-amber-800 ring-amber-600/25",
   danger: "bg-red-50 text-red-700 ring-red-600/20",
   info: "bg-sky-50 text-sky-700 ring-sky-600/20",
-  brand: "bg-emerald-600 text-white ring-emerald-700",
+  brand: "bg-brand-600 text-white ring-brand-700",
 };
 
 export function Badge({ tone = "neutral", className, children }: { tone?: BadgeTone; className?: string; children: React.ReactNode }) {
@@ -51,7 +51,7 @@ export function Badge({ tone = "neutral", className, children }: { tone?: BadgeT
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "dark" | "destructive";
 type ButtonSize = "sm" | "md" | "lg" | "xl";
 const BTN_VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-[0_1px_0_rgba(255,255,255,0.18)_inset,0_6px_16px_-8px_rgba(5,150,105,0.7)]",
+  primary: "bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 shadow-[0_1px_0_rgba(255,255,255,0.18)_inset,0_6px_16px_-8px_rgba(31,111,168,0.7)]",
   secondary: "bg-white text-slate-800 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 active:bg-slate-100",
   ghost: "text-slate-700 hover:bg-slate-100 active:bg-slate-200",
   danger: "bg-white text-red-700 ring-1 ring-inset ring-red-200 hover:bg-red-50 active:bg-red-100",
@@ -75,7 +75,7 @@ export function Button({
     <button
       type={props.type ?? "button"}
       className={cn(
-        "hit inline-flex select-none items-center justify-center font-semibold transition-[background-color,color,box-shadow,transform] duration-150 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
+        "hit inline-flex select-none items-center justify-center font-semibold transition-[background-color,color,box-shadow,transform] duration-150 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100",
         BTN_VARIANTS[variant],
         BTN_SIZES[size],
         className,
@@ -203,7 +203,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
           <h2 id={titleId} className="text-base font-semibold text-slate-900">
             {title}
           </h2>
-          <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-emerald-600" aria-label={t("Fermer")}>
+          <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-brand-600" aria-label={t("Fermer")}>
             <X className="size-5" />
           </button>
         </div>
@@ -218,7 +218,7 @@ export function EmptyState({ icon, title, children }: { icon: React.ReactNode; t
     <div className="flex flex-col items-center justify-center px-6 py-10 text-center">
       <div className="relative flex size-14 items-center justify-center rounded-2xl bg-slate-50 text-slate-400 ring-1 ring-slate-900/5">
         {icon}
-        <span className="absolute -right-1 -top-1 size-3 rounded-full bg-emerald-200 ring-4 ring-white" />
+        <span className="absolute -right-1 -top-1 size-3 rounded-full bg-brand-200 ring-4 ring-white" />
       </div>
       <p className="mt-4 font-display font-semibold text-slate-800">{title}</p>
       {children && <div className="mt-1 max-w-xs text-sm text-slate-500">{children}</div>}
@@ -246,7 +246,7 @@ export function Segmented<T extends string>({
           aria-pressed={value === o.value}
           onClick={() => onChange(o.value)}
           className={cn(
-            "hit flex min-h-9 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-emerald-600",
+            "hit flex min-h-9 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-brand-600",
             value === o.value ? "bg-white text-slate-900 shadow-sm" : "text-slate-600 hover:text-slate-900",
           )}
         >
@@ -275,7 +275,7 @@ export function PageTitle({ eyebrow, title, children }: { eyebrow?: string; titl
   return (
     <div className="anim-rise mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        {eyebrow && <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">{eyebrow}</p>}
+        {eyebrow && <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">{eyebrow}</p>}
         <h1 className="mt-1.5 font-display text-[1.75rem] font-bold leading-tight tracking-tight text-balance text-slate-900 sm:text-3xl">{title}</h1>
       </div>
       {children}
@@ -306,7 +306,7 @@ export function Stars({ value, onChange, size = "md", label }: { value: number; 
           aria-checked={value === i}
           aria-label={t("{score} sur 5", { score: i })}
           onClick={() => onChange(i)}
-          className="flex size-11 items-center justify-center rounded-lg transition-transform hover:scale-110 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-emerald-600"
+          className="flex size-11 items-center justify-center rounded-lg transition-transform hover:scale-110 active:scale-[0.96] focus-visible:outline-2 focus-visible:outline-brand-600"
         >
           <Star className={cn(size === "md" ? "size-6" : px, "transition-colors", i <= value ? "fill-amber-400 text-amber-400" : "fill-slate-100 text-slate-300")} />
         </button>

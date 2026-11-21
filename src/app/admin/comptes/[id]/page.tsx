@@ -88,7 +88,7 @@ export default async function AccountPage({ params }: { params: Promise<{ id: st
                           {tx.note && ` · ${note(tx.note)}`}
                         </p>
                       </div>
-                      <span className={cn("font-semibold tabular-nums", tx.amount > 0 ? "text-emerald-600" : "text-slate-900")}>
+                      <span className={cn("font-semibold tabular-nums", tx.amount > 0 ? "text-brand-600" : "text-slate-900")}>
                         {tx.amount > 0 ? "+" : ""}
                         {money(tx.amount)}
                       </span>

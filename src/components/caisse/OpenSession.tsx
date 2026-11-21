@@ -16,7 +16,7 @@ export function OpenSession({ today, reservedCount, hasMenu }: { today: string; 
   return (
     <div className="mx-auto max-w-md py-6">
       <Card className="p-6 sm:p-8">
-        <span className="flex size-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
+        <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
           <LockOpen className="size-6" />
         </span>
         <h1 className="mt-4 text-xl font-semibold text-slate-900">{t("Ouvrir la caisse")}</h1>

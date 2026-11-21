@@ -3,19 +3,32 @@
 @theme {
   --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Bricolage Grotesque Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  /* Couleurs Vatel : bleu #86c3ea (300) et noir #1d1d1b (950) relevés sur le logo ;
+     500 à 800 = bleus plus profonds pour garder le texte blanc lisible (contraste AA) */
+  --color-brand-50: #f1f8fd;
+  --color-brand-100: #e1f0fa;
+  --color-brand-200: #c4e2f5;
+  --color-brand-300: #86c3ea;
+  --color-brand-400: #5aa9dc;
+  --color-brand-500: #2f8bc6;
+  --color-brand-600: #1f6fa8;
+  --color-brand-700: #1c5a89;
+  --color-brand-800: #1b4a70;
+  --color-brand-900: #2b2b29;
+  --color-brand-950: #1d1d1b;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 :root {
   color-scheme: light;
-  --page: #f6f8f7;
+  --page: #f5f7f9;
 }
 
 html {
   /* Pas de délai de double-tap sur mobile ; surbrillance au toucher discrète, aux couleurs de la marque */
   touch-action: manipulation;
-  -webkit-tap-highlight-color: rgb(16 185 129 / 0.12);
+  -webkit-tap-highlight-color: rgb(31 111 168 / 0.12);
 }
 
 @media (pointer: fine) {
@@ -32,8 +45,8 @@ body {
 }
 
 ::selection {
-  background: #a7f3d0;
-  color: #022c22;
+  background: #c4e2f5;
+  color: #1d1d1b;
 }
 
 /* ─── Mouvements de base ─────────────────────────────────────────────── */
@@ -122,7 +135,7 @@ body {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #eef2f1 25%, #f8faf9 50%, #eef2f1 75%);
+  background: linear-gradient(90deg, #edf1f5 25%, #f8fafc 50%, #edf1f5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s linear infinite;
 }

@@ -9,8 +9,8 @@ export function OneTimePassword({ email, password, onDone }: { email?: string; p
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   return (
-    <div className="rounded-2xl border-2 border-emerald-500 bg-emerald-50 p-4">
-      <p className="flex items-center gap-2 text-sm font-semibold text-emerald-900">
+    <div className="rounded-2xl border-2 border-brand-500 bg-brand-50 p-4">
+      <p className="flex items-center gap-2 text-sm font-semibold text-brand-900">
         <KeyRound className="size-4" /> {email ? t("Mot de passe provisoire pour {email}", { email }) : t("Mot de passe provisoire")}
       </p>
       <div className="mt-2 flex items-center gap-2">
@@ -25,14 +25,14 @@ export function OneTimePassword({ email, password, onDone }: { email?: string; p
               /* sélection manuelle possible */
             }
           }}
-          className="rounded-lg p-2 text-emerald-800 hover:bg-emerald-100"
+          className="rounded-lg p-2 text-brand-800 hover:bg-brand-100"
           aria-label={t("Copier")}
         >
           {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
         </button>
       </div>
-      <p className="mt-2 text-xs text-emerald-900">{t("Transmettez-le en main propre. Il ne sera plus affiché ; la personne devra le changer à sa première connexion.")}</p>
-      <button type="button" onClick={onDone} className="mt-2 text-xs font-semibold text-emerald-800 underline">
+      <p className="mt-2 text-xs text-brand-900">{t("Transmettez-le en main propre. Il ne sera plus affiché ; la personne devra le changer à sa première connexion.")}</p>
+      <button type="button" onClick={onDone} className="mt-2 text-xs font-semibold text-brand-800 underline">
         {t("J'ai transmis le mot de passe")}
       </button>
     </div>

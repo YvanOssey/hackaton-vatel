@@ -42,22 +42,22 @@ export default async function WalletPage() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,390px)_1fr]">
         <div className="space-y-5">
           {/* Carte de solde */}
-          <div className="anim-rise relative overflow-hidden rounded-3xl bg-emerald-950 p-6 text-white shadow-[0_24px_60px_-28px_rgba(2,44,34,0.8)]">
+          <div className="anim-rise relative overflow-hidden rounded-3xl bg-brand-950 p-6 text-white shadow-[0_24px_60px_-28px_rgba(29,29,27,0.8)]">
             <div className="bg-grid pointer-events-none absolute inset-0 [mask-image:linear-gradient(135deg,black,transparent_70%)]" />
-            <div className="pointer-events-none absolute -bottom-24 -right-16 size-64 rounded-full bg-emerald-500/25 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 -right-16 size-64 rounded-full bg-brand-500/25 blur-3xl" />
             <div className="relative flex items-center justify-between">
               <Brand light size="sm" />
-              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-emerald-200/60">FCFA</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-brand-200/60">FCFA</span>
             </div>
-            <p className="relative mt-8 text-sm font-medium text-emerald-100/70">{t("Solde")}</p>
+            <p className="relative mt-8 text-sm font-medium text-brand-100/70">{t("Solde")}</p>
             <p className={cn("relative font-display text-[2.6rem] font-bold leading-none tracking-tight tabular-nums", low && "text-amber-300")}>{money(w.balance)}</p>
             <div className="relative mt-5 grid grid-cols-2 gap-3 border-t border-dashed border-white/20 pt-4 text-sm">
               <div>
-                <p className="text-emerald-100/60">{t("Engagé")}</p>
+                <p className="text-brand-100/60">{t("Engagé")}</p>
                 <p className="font-semibold tabular-nums">{money(w.committed)}</p>
               </div>
               <div>
-                <p className="text-emerald-100/60">{t("Disponible")}</p>
+                <p className="text-brand-100/60">{t("Disponible")}</p>
                 <p className="font-semibold tabular-nums">{money(w.available)}</p>
               </div>
             </div>
@@ -100,7 +100,7 @@ export default async function WalletPage() {
                       const Icon = tx.type === "MEAL" ? Utensils : credit ? ArrowDownLeft : ArrowUpRight;
                       return (
                         <li key={tx.id} className="flex items-center gap-3 px-5 py-3">
-                          <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", credit ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-500")}>
+                          <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", credit ? "bg-brand-50 text-brand-600" : "bg-slate-100 text-slate-500")}>
                             <Icon className="size-4" />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -111,7 +111,7 @@ export default async function WalletPage() {
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className={cn("font-display text-[15px] font-semibold tabular-nums", credit ? "text-emerald-600" : "text-slate-900")}>
+                            <p className={cn("font-display text-[15px] font-semibold tabular-nums", credit ? "text-brand-600" : "text-slate-900")}>
                               {credit ? "+" : "−"}
                               {money(Math.abs(tx.amount))}
                             </p>

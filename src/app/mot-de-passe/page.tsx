@@ -31,7 +31,7 @@ export default async function PasswordPage() {
           )}
         </div>
         <div className="anim-rise rounded-3xl bg-white p-6 shadow-[0_20px_50px_-24px_rgba(15,23,42,0.25)] ring-1 ring-slate-900/5 sm:p-8">
-          <span className="flex size-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-600/10">
+          <span className="flex size-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-600/10">
             <KeyRound className="size-5" />
           </span>
           <h1 className="mt-5 font-display text-2xl font-bold tracking-tight text-slate-900">{user.mustChangePassword ? t("Choisissez votre mot de passe") : t("Changer de mot de passe")}</h1>

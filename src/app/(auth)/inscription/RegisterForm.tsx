@@ -27,7 +27,7 @@ const LEVELS = [
   { label: "Faible", color: "bg-orange-500", text: "text-orange-600" },
   { label: "Correct", color: "bg-amber-400", text: "text-amber-700" },
   { label: "Solide", color: "bg-lime-500", text: "text-lime-700" },
-  { label: "Excellent", color: "bg-emerald-500", text: "text-emerald-700" },
+  { label: "Excellent", color: "bg-brand-500", text: "text-brand-700" },
 ];
 
 const TYPES = [
@@ -144,7 +144,7 @@ export function RegisterForm() {
               <span
                 className={cn(
                   "flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold transition-colors duration-300",
-                  done ? "bg-emerald-600 text-white" : current ? "bg-emerald-950 text-white" : "bg-slate-200 text-slate-500",
+                  done ? "bg-brand-600 text-white" : current ? "bg-brand-950 text-white" : "bg-slate-200 text-slate-500",
                 )}
               >
                 {done ? <Check className="size-3.5" strokeWidth={3} /> : n}
@@ -152,7 +152,7 @@ export function RegisterForm() {
               <span className={cn("hidden text-xs font-semibold sm:block", current ? "text-slate-900" : "text-slate-500")}>{label}</span>
               {i < steps.length - 1 && (
                 <span className="h-0.5 flex-1 overflow-hidden rounded-full bg-slate-200">
-                  <span className={cn("block h-full origin-left bg-emerald-600 transition-transform duration-500", done ? "scale-x-100" : "scale-x-0")} />
+                  <span className={cn("block h-full origin-left bg-brand-600 transition-transform duration-500", done ? "scale-x-100" : "scale-x-0")} />
                 </span>
               )}
             </li>
@@ -175,18 +175,18 @@ export function RegisterForm() {
                   onClick={() => setType(ty.id)}
                   className={cn(
                     "anim-rise group flex items-center gap-4 rounded-2xl bg-white p-4 text-left ring-1 ring-inset transition-[box-shadow,background-color] duration-200",
-                    on ? "shadow-[0_0_0_4px_rgba(16,185,129,0.12)] ring-2 ring-emerald-500" : "ring-slate-200 hover:ring-slate-300",
+                    on ? "shadow-[0_0_0_4px_rgba(47,139,198,0.12)] ring-2 ring-brand-500" : "ring-slate-200 hover:ring-slate-300",
                   )}
                   style={delay(140 + i * 70)}
                 >
-                  <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-xl transition-colors", on ? "bg-emerald-600 text-white" : "bg-slate-100 text-slate-500 group-hover:bg-slate-200")}>
+                  <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-xl transition-colors", on ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-500 group-hover:bg-slate-200")}>
                     <ty.icon className="size-6" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-display text-[17px] font-semibold text-slate-900">{t(ty.title)}</span>
                     <span className="block text-sm text-slate-500">{t(ty.text)}</span>
                   </span>
-                  <span className={cn("flex size-5 shrink-0 items-center justify-center rounded-full ring-2 transition", on ? "bg-emerald-600 ring-emerald-600" : "ring-slate-300")}>
+                  <span className={cn("flex size-5 shrink-0 items-center justify-center rounded-full ring-2 transition", on ? "bg-brand-600 ring-brand-600" : "ring-slate-300")}>
                     {on && <Check className="size-3 text-white" strokeWidth={3.5} />}
                   </span>
                 </button>
@@ -283,7 +283,7 @@ export function RegisterForm() {
 
       <p className="anim-rise text-center text-sm text-slate-600" style={delay(380)}>
         {t("Déjà inscrit ?")}{" "}
-        <Link href="/connexion" className="font-semibold text-emerald-700 underline-offset-4 hover:underline">
+        <Link href="/connexion" className="font-semibold text-brand-700 underline-offset-4 hover:underline">
           {t("Se connecter")}
         </Link>
       </p>

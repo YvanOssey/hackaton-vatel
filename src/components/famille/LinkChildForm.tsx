@@ -41,7 +41,7 @@ export function LinkChildForm({ className }: { className?: string }) {
       <label htmlFor="link-code" className="block text-sm font-medium text-slate-700">
         {t("Code d'association")}
       </label>
-      <div className={cn("flex h-14 items-center rounded-2xl bg-white ring-1 ring-inset transition", error ? "ring-red-300" : "ring-slate-200 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:shadow-[0_0_0_4px_rgba(16,185,129,0.12)]")}>
+      <div className={cn("flex h-14 items-center rounded-2xl bg-white ring-1 ring-inset transition", error ? "ring-red-300" : "ring-slate-200 focus-within:ring-2 focus-within:ring-brand-500 focus-within:shadow-[0_0_0_4px_rgba(47,139,198,0.12)]")}>
         <KeyRound className="ml-4 size-5 text-slate-400" />
         <input
           id="link-code"
