@@ -21,7 +21,7 @@ export function PassCard({ token, user, memberRef }: { token: string; user: { id
           <div className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-brand-500/25 blur-2xl" />
           <div className="relative flex items-center justify-between">
             <span className="flex items-center gap-2 text-sm font-semibold">
-              <LogoMark className="size-7" /> {t("Pass cantine")}
+              <LogoMark onDark className="size-7" /> {t("Pass cantine")}
             </span>
             <span className="rounded-full bg-brand-400/15 px-2 py-0.5 text-[11px] font-semibold text-brand-200 ring-1 ring-brand-300/30">{t("Étudiant")}</span>
           </div>

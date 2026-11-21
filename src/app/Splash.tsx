@@ -71,7 +71,7 @@ export function Splash({ target, dateLabel, establishment }: { target: string; d
         <div className="relative">
           <span className="absolute inset-0 rounded-[28%] bg-brand-400/40 [animation:ping-soft_1.6s_var(--ease-out-expo)_380ms_2]" aria-hidden />
           <div className="[animation:pop_700ms_var(--ease-spring)_both]">
-            <LogoMark animated className="size-20 drop-shadow-[0_18px_40px_rgba(47,139,198,0.45)] sm:size-24" />
+            <LogoMark animated named onDark className="size-20 drop-shadow-[0_18px_40px_rgba(47,139,198,0.45)] sm:size-24" />
           </div>
         </div>
 
