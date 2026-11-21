@@ -222,6 +222,8 @@ model Reservation {
   price            Int
   walkIn           Boolean           @default(false)
   allergenOverride Boolean           @default(false)
+  /// Repas à emporter : créneau de retrait choisi (« HH:MM », début du créneau de 15 min) ; null = sur place
+  pickupSlot       String?
   servedAt         DateTime?
   servedById       String?
   servedBy         User?             @relation("ReservationServer", fields: [servedById], references: [id])
@@ -233,6 +235,7 @@ model Reservation {
 
   @@unique([userId, date])
   @@index([date, status])
+  @@index([date, pickupSlot])
 }
 
 /// Grand livre du portefeuille : écritures immuables
@@ -290,6 +293,11 @@ model Settings {
   priceScholarship    Int      @default(500)
   priceStaff          Int      @default(2500)
   priceExternal       Int      @default(4000)
+  /// Service du midi (créneaux de retrait de 15 min et affluence en direct)
+  serviceStart        String   @default("11:30")
+  serviceEnd          String   @default("14:00")
+  /// Repas à emporter au plus par créneau de 15 min
+  pickupCapacity      Int      @default(20)
   updatedAt           DateTime @updatedAt
 }
 

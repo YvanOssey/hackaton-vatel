@@ -107,7 +107,7 @@ export async function consumerOverview(actor: Actor) {
       return {
         date,
         menu: menu ? serializeMenu(menu, photos) : null,
-        reservation: res ? { id: res.id, status: res.status, price: res.price, walkIn: res.walkIn, rating: res.rating ? { score: res.rating.score, comment: res.rating.comment } : null } : null,
+        reservation: res ? { id: res.id, status: res.status, price: res.price, walkIn: res.walkIn, pickupSlot: res.pickupSlot, rating: res.rating ? { score: res.rating.score, comment: res.rating.comment } : null } : null,
         booking: bookingState(date, now, settings.cutoffTime, settings.bookingHorizonDays),
       };
     }),
@@ -237,7 +237,7 @@ export async function kitchenOverview(actor: Actor) {
   const from = isoToDate(monday);
   const to = isoToDate(addDays(monday, 13));
   const history = isoToDate(addDays(monday, -28));
-  const [menus, counts, todayOrders, stock, walkIns, photos] = await Promise.all([
+  const [menus, counts, todayOrders, stock, walkIns, pickups, photos] = await Promise.all([
     prisma.menu.findMany({ where: { date: { gte: from, lte: to } }, include: { dishes: true }, orderBy: { date: "asc" } }),
     prisma.reservation.groupBy({ by: ["date", "status"], where: { date: { gte: from, lte: to }, status: { in: ["RESERVED", "SERVED"] } }, _count: true }),
     prisma.reservation.findMany({
@@ -248,6 +248,8 @@ export async function kitchenOverview(actor: Actor) {
     prisma.stockItem.findMany({ orderBy: { name: "asc" } }),
     // Historique des passages sans réservation (4 semaines) pour estimer la production
     prisma.reservation.groupBy({ by: ["date", "walkIn"], where: { date: { gte: history, lt: isoToDate(now.today) }, status: "SERVED" }, _count: true }),
+    // Repas à emporter du jour, par créneau de retrait
+    prisma.reservation.groupBy({ by: ["pickupSlot"], where: { date: isoToDate(now.today), status: { in: ["RESERVED", "SERVED"] }, pickupSlot: { not: null } }, _count: true, orderBy: { pickupSlot: "asc" } }),
     // Photos des 14 jours, même sans menu enregistré (le chef peut ajouter la photo d'abord)
     photoIndex(Array.from({ length: 14 }, (_, i) => isoToDate(addDays(monday, i)))),
   ]);
@@ -262,6 +264,7 @@ export async function kitchenOverview(actor: Actor) {
     today: now.today,
     menus: menus.map((m) => serializeMenu(m, photos)),
     photos: Object.fromEntries(photos),
+    pickups: pickups.map((p) => ({ slot: p.pickupSlot!, count: p._count })),
     days: days.map((date) => {
       const c = counts.filter((x) => dateToIso(x.date) === date);
       const served = c.find((x) => x.status === "SERVED")?._count ?? 0;
@@ -431,6 +434,9 @@ export async function adminSettings(actor: Actor) {
     bookingHorizonDays: s.bookingHorizonDays,
     lowBalanceThreshold: s.lowBalanceThreshold,
     allowWalkIn: s.allowWalkIn,
+    serviceStart: s.serviceStart,
+    serviceEnd: s.serviceEnd,
+    pickupCapacity: s.pickupCapacity,
     priceStudent: s.priceStudent,
   };
 }

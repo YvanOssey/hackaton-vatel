@@ -14,6 +14,9 @@ type S = {
   lowBalanceThreshold: number;
   allowWalkIn: boolean;
   priceStudent: number;
+  serviceStart: string;
+  serviceEnd: string;
+  pickupCapacity: number;
 };
 
 export function SettingsForm({ initial }: { initial: S }) {
@@ -57,6 +60,17 @@ export function SettingsForm({ initial }: { initial: S }) {
               <input id="horizon" inputMode="numeric" value={String(s.bookingHorizonDays)} onChange={num("bookingHorizonDays")} className={inputCls} />
             </Field>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label={t("Début du service")} htmlFor="service-start">
+              <input id="service-start" type="time" value={s.serviceStart} onChange={(e) => setS({ ...s, serviceStart: e.target.value })} className={inputCls} />
+            </Field>
+            <Field label={t("Fin du service")} htmlFor="service-end">
+              <input id="service-end" type="time" value={s.serviceEnd} onChange={(e) => setS({ ...s, serviceEnd: e.target.value })} className={inputCls} />
+            </Field>
+          </div>
+          <Field label={t("Repas à emporter par créneau")} htmlFor="pickup-capacity" hint={t("Créneaux de 15 minutes pendant le service")}>
+            <input id="pickup-capacity" inputMode="numeric" value={String(s.pickupCapacity)} onChange={num("pickupCapacity")} className={inputCls} />
+          </Field>
           <Field label={t("Seuil de solde bas (FCFA)")} htmlFor="low">
             <input id="low" inputMode="numeric" value={String(s.lowBalanceThreshold)} onChange={num("lowBalanceThreshold")} className={inputCls} />
           </Field>

@@ -5,6 +5,7 @@ import { CalendarX2, Check, CircleCheck, Clock, Flame, Heart, Leaf, Lock, Messag
 import type { Course, NutriScore, ReservationStatus } from "@prisma/client";
 import { cancelAction, rateMealAction, reserveAction, toggleFavoriteAction } from "@/app/espace/actions";
 import { DishPhoto } from "@/components/DishPhoto";
+import { PickupChooser } from "./PickupChooser";
 import { useResultToast } from "@/components/toast";
 import { AllergenChip, Badge, Button, Card, NutriBadge, Segmented, Stars } from "@/components/ui";
 import { COURSES, RATING_LABELS, allergenLabel } from "@/lib/constants";
@@ -18,7 +19,7 @@ type Dish = { id: string; course: Course; name: string; allergens: string[]; kca
 export type Day = {
   date: string;
   menu: { nutriScore: NutriScore; dishes: Dish[] } | null;
-  reservation: { id: string; status: ReservationStatus; price: number; walkIn: boolean; rating: { score: number; comment: string | null } | null } | null;
+  reservation: { id: string; status: ReservationStatus; price: number; walkIn: boolean; pickupSlot: string | null; rating: { score: number; comment: string | null } | null } | null;
   booking: { open: true } | { open: false; reason: string; params?: Record<string, string | number> };
 };
 
@@ -77,7 +78,12 @@ function DayCard({ day, today, price, userAllergens, canBook, favoriteKeys }: { 
   const [pending, start] = useTransition();
   const show = useResultToast();
   const { menu, reservation, booking } = day;
-  const conflicts = menu ? allergenConflicts(userAllergens, menu.dishes.map((x) => x.allergens)) : [];
+  const conflicts = menu
+    ? allergenConflicts(
+        userAllergens,
+        menu.dishes.map((x) => x.allergens),
+      )
+    : [];
   const isToday = day.date === today;
   const past = day.date < today;
   const d = isoToDate(day.date);
@@ -103,7 +109,13 @@ function DayCard({ day, today, price, userAllergens, canBook, favoriteKeys }: { 
     );
 
   return (
-    <Card className={cn("flex h-full flex-col overflow-hidden transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_-20px_rgba(15,23,42,0.2)]", isToday && "ring-2 ring-brand-500/70", past && !reservation && "opacity-70")}>
+    <Card
+      className={cn(
+        "flex h-full flex-col overflow-hidden transition-shadow hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_18px_40px_-20px_rgba(15,23,42,0.2)]",
+        isToday && "ring-2 ring-brand-500/70",
+        past && !reservation && "opacity-70",
+      )}
+    >
       <div className="flex items-center gap-3 px-5 pb-3 pt-4">
         <div className={cn("flex size-12 shrink-0 flex-col items-center justify-center rounded-xl leading-none", isToday ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-700")}>
           <span className="font-display text-lg font-bold">{d.getUTCDate()}</span>
@@ -111,7 +123,9 @@ function DayCard({ day, today, price, userAllergens, canBook, favoriteKeys }: { 
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-display font-semibold capitalize text-slate-900">{weekday}</p>
-          <p className={cn("text-xs", isToday ? "font-semibold text-brand-700" : "text-slate-500")}>{isToday ? t("Aujourd'hui") : past ? t("Passé") : menu ? money(reservation?.price ?? price) : "—"}</p>
+          <p className={cn("text-xs", isToday ? "font-semibold text-brand-700" : "text-slate-500")}>
+            {isToday ? t("Aujourd'hui") : past ? t("Passé") : menu ? money(reservation?.price ?? price) : "—"}
+          </p>
         </div>
         {status}
       </div>
@@ -158,9 +172,7 @@ function DayCard({ day, today, price, userAllergens, canBook, favoriteKeys }: { 
           {conflicts.length > 0 && reservation?.status !== "SERVED" && (
             <div className="mx-5 mb-3 flex items-start gap-2 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700 ring-1 ring-inset ring-red-200">
               <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-              <span>
-                {rich(t("Contient : {list} — signalé en caisse."), { list: <strong>{conflicts.map((a) => t(allergenLabel(a))).join(", ")}</strong> })}
-              </span>
+              <span>{rich(t("Contient : {list} — signalé en caisse."), { list: <strong>{conflicts.map((a) => t(allergenLabel(a))).join(", ")}</strong> })}</span>
             </div>
           )}
           <div className="ticket-cut mx-4" />
@@ -168,15 +180,24 @@ function DayCard({ day, today, price, userAllergens, canBook, favoriteKeys }: { 
             {reservation?.status === "SERVED" ? (
               <RateMeal reservationId={reservation.id} rating={reservation.rating} />
             ) : reservation?.status === "RESERVED" ? (
-              <Button
-                variant="danger"
-                className="w-full"
-                disabled={!booking.open || pending}
-                title={!booking.open ? reason : undefined}
-                onClick={() => start(async () => void show(await cancelAction(reservation.id), "Réservation annulée"))}
-              >
-                {booking.open ? t("Annuler la réservation") : <><Lock className="size-4" /> {t("Annulation close")}</>}
-              </Button>
+              <div className="space-y-2">
+                <PickupChooser reservationId={reservation.id} date={day.date} slot={reservation.pickupSlot} disabled={!booking.open || pending} />
+                <Button
+                  variant="danger"
+                  className="w-full"
+                  disabled={!booking.open || pending}
+                  title={!booking.open ? reason : undefined}
+                  onClick={() => start(async () => void show(await cancelAction(reservation.id), "Réservation annulée"))}
+                >
+                  {booking.open ? (
+                    t("Annuler la réservation")
+                  ) : (
+                    <>
+                      <Lock className="size-4" /> {t("Annulation close")}
+                    </>
+                  )}
+                </Button>
+              </div>
             ) : (
               <Button
                 className="w-full"
@@ -184,7 +205,15 @@ function DayCard({ day, today, price, userAllergens, canBook, favoriteKeys }: { 
                 title={!booking.open ? reason : !canBook ? t("Compte en attente de validation") : undefined}
                 onClick={() => start(async () => void show(await reserveAction(day.date), "Repas réservé"))}
               >
-                {!booking.open ? <><Lock className="size-4" /> {reason}</> : !canBook ? t("Validation du compte requise") : t("Réserver · {price:money}", { price })}
+                {!booking.open ? (
+                  <>
+                    <Lock className="size-4" /> {reason}
+                  </>
+                ) : !canBook ? (
+                  t("Validation du compte requise")
+                ) : (
+                  t("Réserver · {price:money}", { price })
+                )}
               </Button>
             )}
           </div>

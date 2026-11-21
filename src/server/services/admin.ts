@@ -158,7 +158,10 @@ export const settingsSchema = z.object({
   lowBalanceThreshold: z.number().int().min(0).max(1_000_000),
   allowWalkIn: z.boolean(),
   priceStudent: z.number().int().min(0, "Prix invalide.").max(100_000, "Prix trop élevé."),
-});
+  serviceStart: z.string().refine(isTime, "Heure de début du service invalide (HH:MM)."),
+  serviceEnd: z.string().refine(isTime, "Heure de fin du service invalide (HH:MM)."),
+  pickupCapacity: z.number().int().min(1, "Au moins 1 repas à emporter par créneau.").max(500),
+}).refine((s) => s.serviceStart < s.serviceEnd, { message: "Le service doit finir après son début.", path: ["serviceEnd"] });
 
 export async function updateSettings(actor: Actor, raw: z.infer<typeof settingsSchema>) {
   assertRole(actor, [...ADMIN]);

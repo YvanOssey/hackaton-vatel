@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, CheckCircle2, ClipboardList, Leaf, MessageSquareQuote, Package, ShieldAlert, Sparkles, Star } from "lucide-react";
+import { ArrowRight, CalendarDays, CheckCircle2, ClipboardList, Leaf, MessageSquareQuote, Package, ShieldAlert, ShoppingBag, Sparkles, Star } from "lucide-react";
 import { MenuGallery } from "@/components/DishPhoto";
 import { Avatar, Badge, Card, CardHeader, EmptyState, PageTitle, Stars, Stat } from "@/components/ui";
 import { allergenLabel } from "@/lib/constants";
@@ -68,6 +68,23 @@ export default async function KitchenPage() {
           <div className="p-5">
             <MenuGallery dishes={todayMenu.dishes} />
           </div>
+        </Card>
+      )}
+
+      {k.pickups.length > 0 && (
+        <Card className="mt-5">
+          <CardHeader
+            title={t("Repas à emporter aujourd'hui")}
+            subtitle={t("{count} plateau(x) à préparer, par créneau de retrait", { count: k.pickups.reduce((n, p) => n + p.count, 0) })}
+            icon={<ShoppingBag className="size-4" />}
+          />
+          <ul className="flex flex-wrap gap-2 p-5">
+            {k.pickups.map((p) => (
+              <li key={p.slot} className="rounded-xl bg-slate-50 px-3 py-2 text-sm ring-1 ring-inset ring-slate-200">
+                <span className="font-semibold tabular-nums text-slate-900">{p.slot}</span> <span className="text-slate-500">· {t("{count} plateau(x)", { count: p.count })}</span>
+              </li>
+            ))}
+          </ul>
         </Card>
       )}
 

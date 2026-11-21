@@ -8,7 +8,8 @@ import { regeneratePass, updateProfile } from "@/server/services/account";
 import { createLinkCode, revokeLinkCode, unlink } from "@/server/services/family";
 import { addFavorite, removeFavorite, toggleFavoriteDish } from "@/server/services/favorites";
 import { rateMeal } from "@/server/services/ratings";
-import { cancelReservation, reserveMeal } from "@/server/services/reservations";
+import { cancelReservation, pickupAvailability, reserveMeal, setPickupSlot } from "@/server/services/reservations";
+import { liveService } from "@/server/services/live";
 
 export async function reserveAction(date: string) {
   return run(
@@ -104,4 +105,32 @@ export async function removeFavoriteAction(id: string) {
     await removeFavorite(await currentActor(), id);
     revalidatePath("/espace", "layout");
   }, "Plat retiré de vos préférés.");
+}
+
+/** Affluence en direct (rafraîchie par la page toutes les minutes) */
+export async function liveAction() {
+  return run(async () => {
+    await currentActor();
+    return liveService();
+  });
+}
+
+/** Places restantes par créneau de retrait */
+export async function pickupSlotsAction(date: string) {
+  return run(async () => {
+    await currentActor();
+    return pickupAvailability(date);
+  });
+}
+
+/** Repas à emporter : choisir un créneau (ou null pour manger sur place) */
+export async function setPickupAction(reservationId: string, slot: string | null) {
+  return run(
+    async () => {
+      const r = await setPickupSlot(await currentActor(), reservationId, slot);
+      revalidatePath("/espace", "layout");
+      return r;
+    },
+    (r) => (r.pickupSlot ? msg("Repas à emporter : retrait à {time}, sans faire la queue.", { time: r.pickupSlot }) : msg("Repas sur place.")),
+  );
 }

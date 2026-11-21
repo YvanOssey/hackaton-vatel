@@ -18,7 +18,9 @@ import { translate } from "@/i18n/core";
 import { readMenuPhoto, removeMenuPhoto, setMenuPhoto, sniffImage } from "@/server/services/photos";
 import { MAX_PHOTO_BYTES } from "@/lib/photos";
 import { rateMeal, ratingsSummary } from "@/server/services/ratings";
-import { reserveMeal } from "@/server/services/reservations";
+import { pickupAvailability, reserveMeal, setPickupSlot } from "@/server/services/reservations";
+import { liveService } from "@/server/services/live";
+import { affluence, pickupSlots, slotOf } from "@/lib/rules";
 import { TODAY, balanceOf, makeMenu, makeUser, resetDb, setTime } from "./helpers";
 
 const code = (p: Promise<unknown>) => p.then(() => "OK", (e: { code?: string }) => e.code ?? String(e));
@@ -297,5 +299,63 @@ describe("Notifications de crédit et de nouveau menu", () => {
     for (let i = 0; i < 19; i++) await addFavorite(a, `Plat numéro ${i}`);
     expect(await code(addFavorite(a, "Un plat de trop"))).toBe("LIMIT");
     expect(f.name).toBe("Attiéké");
+  });
+});
+
+describe("File d'attente en direct et repas à emporter", () => {
+  it("découpe le service en créneaux de 15 min et estime l'affluence", () => {
+    const slots = pickupSlots("11:30", "14:00");
+    expect(slots).toHaveLength(10);
+    expect([slots[0], slots[9]]).toEqual(["11:30", "13:45"]);
+    expect(slotOf(12 * 60 + 22)).toBe("12:15");
+    expect(affluence(10, 0)).toEqual({ level: "closed", waitMinutes: null });
+    expect(affluence(4, 1).level).toBe("calm");
+    expect(affluence(20, 2).level).toBe("busy");
+    expect(affluence(36, 2)).toEqual({ level: "rush", waitMinutes: 6 });
+  });
+
+  it("réserve un créneau à emporter dans la limite de la capacité, même en simultané", async () => {
+    await prisma.settings.update({ where: { id: 1 }, data: { pickupCapacity: 1 } });
+    await makeMenu(TODAY);
+    const [a, b] = [await makeUser({ balance: 5000 }), await makeUser({ balance: 5000 })];
+    const ra = (await reserveMeal(a, TODAY)).reservation;
+    const rb = (await reserveMeal(b, TODAY)).reservation;
+    const results = await Promise.all([code(setPickupSlot(a, ra.id, "12:15")), code(setPickupSlot(b, rb.id, "12:15"))]);
+    expect([...results].sort()).toEqual(["FULL", "OK"]);
+    expect((await pickupAvailability(TODAY)).find((s) => s.slot === "12:15")?.left).toBe(0);
+    expect(await code(setPickupSlot(a, rb.id, "12:30"))).toBe("NOT_FOUND"); // réservation d'un autre
+    expect(await code(setPickupSlot(b, rb.id, "16:00"))).toBe("VALIDATION");
+    // Retour sur place : la place se libère
+    const winner = results[0] === "OK" ? [a, ra] as const : [b, rb] as const;
+    await setPickupSlot(winner[0], winner[1].id, null);
+    expect((await pickupAvailability(TODAY)).find((s) => s.slot === "12:15")?.left).toBe(1);
+    // Après l'heure limite, le créneau ne change plus
+    setTime("10:30");
+    expect(await code(setPickupSlot(a, ra.id, "12:30"))).toBe("CLOSED");
+  });
+
+  it("donne l'affluence des 10 dernières minutes et l'heure habituellement la plus calme", async () => {
+    const cashier = await makeUser({ role: "CASHIER" });
+    // Il y a 7 jours (même jour de la semaine) : 3 passages à 12:00, 1 à 13:00
+    await makeMenu("2026-11-10");
+    for (const [i, at] of ["12:01", "12:03", "12:05", "13:02"].entries()) {
+      const u = await makeUser();
+      await prisma.reservation.create({ data: { userId: u.id, date: new Date("2026-11-10T00:00:00Z"), price: 1500, status: "SERVED", servedAt: new Date(`2026-11-10T${at}:0${i}Z`) } });
+    }
+    setTime("12:20");
+    await openCashSession(cashier, 0);
+    await makeMenu(TODAY);
+    for (const at of ["12:12", "12:15"]) {
+      const u = await makeUser();
+      await prisma.reservation.create({ data: { userId: u.id, date: new Date(`${TODAY}T00:00:00Z`), price: 1500, status: "SERVED", servedAt: new Date(`${TODAY}T${at}:00Z`) } });
+    }
+    const live = await liveService();
+    expect(live.inService).toBe(true);
+    expect(live.openCashiers).toBe(1);
+    expect(live.passagesLast10).toBe(2);
+    expect(live.level).toBe("calm");
+    expect(live.profile.find((p) => p.slot === "12:00")?.usual).toBe(3);
+    expect(live.best).not.toBe("12:00"); // l'heure de pointe habituelle n'est jamais conseillée
+    expect(JSON.stringify(live)).not.toMatch(/userId|email/);
   });
 });

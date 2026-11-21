@@ -76,6 +76,11 @@ export function TodayTicket({
                 <Check className="size-3" strokeWidth={3} /> {t("Réservé")}
               </span>
             )}
+            {reservation?.status === "RESERVED" && reservation.pickupSlot && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-white ring-1 ring-white/20">
+                {t("À emporter · {time}", { time: reservation.pickupSlot })}
+              </span>
+            )}
             {reservation?.status === "SERVED" && (
               <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-white ring-1 ring-white/20">
                 <CircleCheck className="size-3" /> {t("Servi · bon appétit")}

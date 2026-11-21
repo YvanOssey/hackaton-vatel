@@ -41,7 +41,7 @@ export async function customerSnapshot(db: Tx, userId: string) {
       allergens: user.allergens,
     },
     reservation: activeReservation
-      ? { status: activeReservation.status, price: activeReservation.price, servedAt: activeReservation.servedAt?.toISOString() ?? null }
+      ? { status: activeReservation.status, price: activeReservation.price, servedAt: activeReservation.servedAt?.toISOString() ?? null, pickupSlot: activeReservation.pickupSlot }
       : null,
     price,
     conflicts,

@@ -85,7 +85,10 @@ export function CustomerPanel({ customer, onUpdate, onClear }: { customer: Custo
               {t("Servi")} {reservation?.servedAt && time(reservation.servedAt)}
             </Badge>
           ) : reservation ? (
-            <Badge tone="brand" className="text-sm">{t("Réservé")}</Badge>
+            <span className="flex flex-wrap gap-1.5">
+              <Badge tone="brand" className="text-sm">{t("Réservé")}</Badge>
+              {reservation.pickupSlot && <Badge tone="info" className="text-sm">{t("À emporter · {time}", { time: reservation.pickupSlot })}</Badge>}
+            </span>
           ) : (
             <Badge tone="warning" className="text-sm">{t("Non réservé")}</Badge>
           )}
