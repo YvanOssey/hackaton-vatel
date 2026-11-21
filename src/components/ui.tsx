@@ -2,6 +2,7 @@
 
 import { Star, X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
+import { createPortal } from "react-dom";
 import type { NutriScore } from "@prisma/client";
 import { NUTRI_COLORS, allergenLabel } from "@/lib/constants";
 import { useI18n } from "@/i18n/client";
@@ -195,9 +196,10 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
     };
   }, [open]);
 
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center overscroll-contain sm:items-center" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+  if (!open || typeof document === "undefined") return null;
+  // Portail vers <body> : un parent animé (transform, ex. .anim-rise) ne peut plus enfermer la fenêtre dans sa carte
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex items-end justify-center overscroll-contain sm:items-center" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] animate-[fade-in_150ms_ease-out]" onClick={onClose} aria-hidden />
       <div ref={panel} tabIndex={-1} className="relative max-h-[92dvh] w-full max-w-md overflow-y-auto overscroll-contain rounded-t-3xl bg-white pb-[env(safe-area-inset-bottom)] shadow-xl outline-none animate-[slide-up_200ms_ease-out] sm:rounded-3xl sm:pb-0">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
@@ -210,7 +212,8 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
         </div>
         <div className="p-5">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
