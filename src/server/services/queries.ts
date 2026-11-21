@@ -22,6 +22,37 @@ function serializeMenu<M extends { date: Date; dishes: { course: keyof typeof di
   return { ...m, date, dishes } as unknown as SerializedMenu<M>;
 }
 
+// ─── Vitrine publique (page d'accueil, sans compte) ───────────────────────
+
+/**
+ * Prochain menu publié (aujourd'hui ou plus tard) pour la page d'accueil publique.
+ * Sans acteur : ne renvoie que des données non personnelles (menu, tarif étudiant, note moyenne agrégée).
+ */
+export async function publicMenuPreview() {
+  const now = clock();
+  const since = new Date(Date.now() - 30 * 24 * 3600 * 1000);
+  const [settings, menu, ratings] = await Promise.all([
+    getSettings(prisma),
+    prisma.menu.findFirst({ where: { status: "PUBLISHED", date: { gte: isoToDate(now.today) } }, include: { dishes: true }, orderBy: { date: "asc" } }),
+    prisma.rating.aggregate({ where: { createdAt: { gte: since } }, _avg: { score: true }, _count: { _all: true } }),
+  ]);
+  return {
+    today: now.today,
+    establishmentName: settings.establishmentName,
+    cutoffTime: settings.cutoffTime,
+    bookingHorizonDays: settings.bookingHorizonDays,
+    price: settings.priceStudent,
+    menu: menu
+      ? {
+          date: dateToIso(menu.date),
+          nutriScore: menu.nutriScore,
+          dishes: serializeMenu(menu).dishes.map((d) => ({ course: d.course, name: d.name, allergens: d.allergens, kcal: d.kcal, vegetarian: d.vegetarian })),
+        }
+      : null,
+    rating: ratings._count._all >= 3 ? { average: Math.round((ratings._avg.score ?? 0) * 10) / 10, count: ratings._count._all } : null,
+  };
+}
+
 // ─── Usager ───────────────────────────────────────────────────────────────
 
 export async function consumerOverview(actor: Actor) {

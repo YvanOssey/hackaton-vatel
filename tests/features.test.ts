@@ -8,7 +8,7 @@ import { createLinkCode, linkChild, studentFamily, unlink } from "@/server/servi
 import { inbox, markRead } from "@/server/services/notifications";
 import { confirmTopUp, initiateTopUp } from "@/server/services/payments";
 import { serveMeal } from "@/server/services/pos";
-import { consumerOverview, familyOverview, kitchenOverview } from "@/server/services/queries";
+import { consumerOverview, familyOverview, kitchenOverview, publicMenuPreview } from "@/server/services/queries";
 import { deleteMenu, saveMenu, setMenuPublished } from "@/server/services/menus";
 import { addFavorite, listFavorites, removeFavorite, toggleFavoriteDish } from "@/server/services/favorites";
 import { adjustBalance } from "@/server/services/admin";
@@ -40,6 +40,22 @@ async function linkedFamily(balance = 0) {
   await linkChild(parent, c);
   return { child, parent };
 }
+
+describe("Vitrine publique", () => {
+  it("montre le prochain menu publié, jamais un brouillon ni un jour passé, sans donnée personnelle", async () => {
+    expect((await publicMenuPreview()).menu).toBeNull();
+    await makeMenu("2026-11-16", { allergens: ["peanuts"] }); // hier
+    await makeMenu(TODAY, { published: false }); // brouillon
+    await makeMenu("2026-11-19", { allergens: ["peanuts"] });
+    const preview = await publicMenuPreview();
+    expect(preview.menu?.date).toBe("2026-11-19");
+    expect(preview.menu?.dishes.map((d) => d.course)).toEqual(["STARTER", "MAIN", "DESSERT"]);
+    expect(preview.menu?.dishes[1].allergens).toEqual(["peanuts"]);
+    expect(preview.price).toBe(1500);
+    expect(preview.rating).toBeNull(); // moins de 3 avis : pas de moyenne affichée
+    expect(JSON.stringify(preview)).not.toMatch(/email|balance|passwordHash|userId/);
+  });
+});
 
 describe("Comptes parents", () => {
   it("crée un compte parent actif sans numéro étudiant", async () => {
